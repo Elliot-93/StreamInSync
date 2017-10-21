@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2005
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamInSync", "StreamInSync\StreamInSync.csproj", "{BAB5CEB2-3A18-4210-97E6-73E82212C96E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamInSync.Tests", "StreamInSync.Tests\StreamInSync.Tests.csproj", "{891A386B-C3DB-4AD8-83D3-897D4426F9A2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BAB5CEB2-3A18-4210-97E6-73E82212C96E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAB5CEB2-3A18-4210-97E6-73E82212C96E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAB5CEB2-3A18-4210-97E6-73E82212C96E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAB5CEB2-3A18-4210-97E6-73E82212C96E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{891A386B-C3DB-4AD8-83D3-897D4426F9A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{891A386B-C3DB-4AD8-83D3-897D4426F9A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{891A386B-C3DB-4AD8-83D3-897D4426F9A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{891A386B-C3DB-4AD8-83D3-897D4426F9A2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7FA9B6FD-FA7B-4B27-927C-4E9D79839381}
+	EndGlobalSection
+EndGlobal
