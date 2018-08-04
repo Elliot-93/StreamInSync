@@ -1,0 +1,21 @@
+﻿@{ Layout = "~/Views/Shared/_Layout.cshtml"; }
+@model StreamInSync.Models.RoomVM
+@section Title {Create Room}
+@section Scripts {
+    <script src="~/Scripts/jquery.signalR-2.2.2.js"></script>
+    <script src="~/SignalR/hubs"></script>
+    <script>var room = @Html.Raw(Json.Encode(Model))</script>
+    <script src="~/Scripts/room.js"></script>
+}
+<h1>@Model.Room.Name</h1>
+<h3>Owner: @Model.Room.Owner.Username</h3>
+<h2>Programme Name: @Model.Room.ProgrammeName</h2>
+<h2>Programme Runtime: @Model.Room.Runtime</h2>
+<h2>Programme Start Time: @Model.Room.ProgrammeStartTime</h2>
+<h3>Users</h3>
+<div class="userList">
+    @foreach (var user in Model.Users)
+    {
+        <p>@user.Username</p>
+    }
+</div>

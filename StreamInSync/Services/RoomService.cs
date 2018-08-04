@@ -1,0 +1,43 @@
+﻿using StreamInSync.Models;
+using StreamInSync.Respository;
+using StreamInSync.Respository.Interfaces;
+
+namespace StreamInSync.Services
+{
+    public class RoomService : IRoomService
+    {
+        private readonly IRoomRepository roomRepository;
+        private readonly IUserRepository userRepository;
+
+        public RoomService()
+        {
+            roomRepository = new RoomRepository();
+            userRepository = new UserRepository();
+        }
+
+        public Room Create(CreateRoomVM newRoom, User user)
+        {
+            return roomRepository.Create(newRoom, user);
+        }
+
+        public Room Get(string name, string password)
+        {
+            return roomRepository.Get(name, password);
+        }
+
+        public Room Get(int roomId)
+        {
+            return roomRepository.Get(roomId);
+        }
+
+        public void AddUser(int roomId, int userId, string connectionId)
+        {
+            roomRepository.AddUser(roomId, userId, connectionId);
+        }
+
+        public int? RemoveUser(int userId, string connectionId)
+        {
+            return roomRepository.RemoveUser(userId, connectionId);
+        }
+    }
+}

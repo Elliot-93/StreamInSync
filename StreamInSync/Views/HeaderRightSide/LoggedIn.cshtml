@@ -1,0 +1,6 @@
+﻿@model StreamInSync.Models.User
+@{Layout = null;}
+<ul class="nav navbar-nav navbar-right">
+    <li><a href="/">Hi @Model.Username</a></li>
+    <li>@Html.ActionLink("Log Off", "LogOut", "Authentication")</li>
+</ul>
