@@ -20,9 +20,9 @@ namespace StreamInSync.Services
             return roomRepository.Create(newRoom, user);
         }
 
-        public Room Get(string name, string password)
+        public Room Get(string inviteCode, string password)
         {
-            return roomRepository.Get(name, password);
+            return roomRepository.Get(inviteCode, password);
         }
 
         public Room Get(int roomId)

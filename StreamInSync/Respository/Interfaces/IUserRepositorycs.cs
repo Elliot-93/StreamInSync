@@ -1,5 +1,4 @@
 ﻿using StreamInSync.Models;
-using System.Collections.Generic;
 
 namespace StreamInSync.Respository.Interfaces
 {
@@ -7,6 +6,6 @@ namespace StreamInSync.Respository.Interfaces
     {
         bool Create(RegisterVM newUser);
         User Get(string username, string password);
-        IList<User> GetUsers(int roomId);
+        User Get(int userId);
     }
 }

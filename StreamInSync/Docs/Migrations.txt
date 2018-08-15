@@ -1,0 +1,15 @@
+﻿Enable-Migrations -ContextTypeName SiteDbContext -MigrationsDirectory Migrations\Site
+Get-Migrations
+
+
+//When Model Changes
+////To update migration revert using below delete migration and run add again
+Update-Database -TargetMigration $InitialDatabase
+////Will lose data
+Update-Database -Force -TargetMigration $InitialDatabase
+
+add-migration -ConfigurationTypeName StreamInSync.Migrations.Site.Configuration "InitialCreate"
+Add-Migration InitialCreate
+
+//Run Seed Method
+update-database -ConfigurationTypeName StreamInSync.Migrations.Site.Configuration

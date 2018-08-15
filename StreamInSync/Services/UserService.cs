@@ -24,9 +24,9 @@ namespace StreamInSync.Services
             return userRepository.Get(username, password);
         }
 
-        public IEnumerable<User> GetUsers(int roomId)
+        public User Get(int userId)
         {
-            return userRepository.GetUsers(roomId);
+            return userRepository.Get(userId);
         }
     }
 }

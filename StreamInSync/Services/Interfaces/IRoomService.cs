@@ -6,7 +6,7 @@ namespace StreamInSync.Services
     {
         Room Create(CreateRoomVM newRoom, User user);
 
-        Room Get(string name, string password);
+        Room Get(string inviteCode, string password);
 
         Room Get(int roomId);
 

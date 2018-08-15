@@ -1,4 +1,5 @@
-﻿using StreamInSync.Contexts;
+﻿using Newtonsoft.Json;
+using StreamInSync.Contexts;
 using StreamInSync.Models;
 using StreamInSync.Services;
 using System.Web.Mvc;
@@ -10,24 +11,24 @@ namespace StreamInSync.Controllers
     {
         private readonly ISessionContext sessionContext;
         private readonly IRoomService roomService;
-        private readonly IUserService userService;
 
         public RoomController()
         {
             sessionContext = new SessionContext();
             roomService = new RoomService();
-            userService = new UserService();
         }
 
         public ActionResult Index(int roomId)
         {
-            //get room if publci fine. If private check on auth token - authenticatedPrivateRoomIds
+            //get room if public fine. If private check on auth token - authenticatedPrivateRoomIds
 
             var room = roomService.Get(roomId);
 
             if (room != null)
             {
-                return View(new RoomVM(room, userService.GetUsers(roomId)));
+                var roomJson = new { room.Id };
+
+                return View(new RoomVM(room, JsonConvert.SerializeObject(roomJson)));
             }
 
             return View("~/Views/Shared/Error");
@@ -67,7 +68,7 @@ namespace StreamInSync.Controllers
         {
             if (ModelState.IsValid)
             {
-                var room = roomService.Get(joinRoom.Name, joinRoom.Password);
+                var room = roomService.Get(joinRoom.InviteCode, joinRoom.Password);
 
                 if (room != null)
                 {

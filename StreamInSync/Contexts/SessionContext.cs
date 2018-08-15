@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using StreamInSync.Models;
+using StreamInSync.Services;
 using System;
 using System.Web;
 using System.Web.Security;
@@ -8,9 +9,16 @@ namespace StreamInSync.Contexts
 {
     public class SessionContext : ISessionContext
     {
+        private readonly IUserService userService;
+
+        public SessionContext()
+        {
+            userService = new UserService();
+        }
+
         public void SetAuthCookie(User user)
         {
-            var userData = JsonConvert.SerializeObject(user);
+            var userData = JsonConvert.SerializeObject(user.Id);
 
             var authTicket = new FormsAuthenticationTicket(1, user.Username, DateTime.Now, DateTime.Now.AddYears(1), true, userData);
 
@@ -33,7 +41,7 @@ namespace StreamInSync.Contexts
                 {
                     var authTicket = FormsAuthentication.Decrypt(cookie.Value);
 
-                    userData = JsonConvert.DeserializeObject<User>(authTicket.UserData);
+                    userData = userService.Get(JsonConvert.DeserializeObject<int>(authTicket.UserData));
                 }
 
             return userData;

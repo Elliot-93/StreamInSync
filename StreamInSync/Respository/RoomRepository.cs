@@ -1,155 +1,93 @@
-﻿using StreamInSync.Models;
-using StreamInSync.Respository.Interfaces;
-using System;
-using System.Data;
-using System.Data.SqlClient;
-
-namespace StreamInSync.Respository
+﻿namespace StreamInSync.Respository
 {
+    using StreamInSync.Data;
+    using StreamInSync.Enums;
+    using StreamInSync.Models;
+    using StreamInSync.Respository.Interfaces;
+    using System;
+    using System.Linq;
+
     public class RoomRepository : IRoomRepository
     {
-        private const string Server = @"Server=localhost\SQLEXPRESS03;Database=StreamInSync;Trusted_Connection=True;";
+        private readonly SiteDbContext dbContext;
+
+        public RoomRepository()
+        {
+            dbContext = new SiteDbContext();
+        }
 
         public Room Create(CreateRoomVM newRoom, User user)
         {
-            using (var sqlConn = new SqlConnection(Server))
+            // to do: implement Ioc per web request dbcontext then this might not be needed? https://stackoverflow.com/questions/10585478/one-dbcontext-per-web-request-why
+            dbContext.Users.Attach(user);
+
+            var room = new Room
             {
-                using (var cmd = new SqlCommand("dbo.CreateRoom", sqlConn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add(new SqlParameter("@Name", newRoom.Name));
-                    cmd.Parameters.Add(new SqlParameter("@Password", newRoom.Password));
-                    cmd.Parameters.Add(new SqlParameter("@UserId", user.Id));
-                    cmd.Parameters.Add(new SqlParameter("@ProgrammeName", newRoom.ProgrammeName));
-                    cmd.Parameters.Add(new SqlParameter("@ProgrammeRuntimeInSeconds", newRoom.RuntimeInSeconds));
-                    cmd.Parameters.Add(new SqlParameter("@ProgrammeStartTime", newRoom.ProgrammeStartTime));
+                Name = newRoom.Name,
+                InviteCode = GenerateInviteCode(),
+                Password = newRoom.Password,
+                Owner = user,
+                ProgrammeName = newRoom.ProgrammeName,
+                Runtime = newRoom.RuntimeInSeconds,
+                ProgrammeStartTime = newRoom.ProgrammeStartTime
+            };
 
-                    sqlConn.Open();
-
-                    var roomId = (int)cmd.ExecuteScalar();
-
-                    if (roomId > 0)
-                    {
-                        return new Room(
-                            roomId, 
-                            newRoom.Name, 
-                            user, 
-                            newRoom.ProgrammeName,
-                            newRoom.RuntimeInSeconds,
-                            newRoom.ProgrammeStartTime);
-                    }
-
-                    return null;
-                }
-            }
+            dbContext.Rooms.Add(room);
+            dbContext.SaveChanges();
+            
+            return room;
         }
 
-        public Room Get(string name, string password)
+        public Room Get(string inviteCode, string password)
         {
-            using (var sqlConn = new SqlConnection(Server))
-            {
-                using (var cmd = new SqlCommand("dbo.GetRoomByRoomNameAndPassword", sqlConn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add(new SqlParameter("@Roomname", name));
-                    cmd.Parameters.Add(new SqlParameter("@Password", password));
-
-                    sqlConn.Open();
-
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        if (reader.HasRows)
-                        {
-                            reader.Read();
-
-                            return new Room(
-                                (int)reader["RoomId"],
-                                (string)reader["RoomName"],
-                                new User((int)reader["UserId"], (string)reader["Username"]),
-                                (string)reader["ProgrammeName"],
-                                new TimeSpan(0, 0, (int)reader["ProgrammeRuntimeInSeconds"]),
-                                (DateTime)reader["ProgrammeStartTime"]);
-                        }
-                        else
-                        {
-                            return null;
-                        }
-                    }
-
-                }
-            }
+            return dbContext.Rooms.FirstOrDefault(r => 
+                r.InviteCode.Equals(inviteCode, StringComparison.Ordinal) 
+                && r.InviteCode.Equals(inviteCode, StringComparison.Ordinal));
         }
 
         public Room Get(int roomId)
         {
-            using (var sqlConn = new SqlConnection(Server))
-            {
-                using (var cmd = new SqlCommand("dbo.GetRoomByRoomId", sqlConn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add(new SqlParameter("@RoomId", roomId));
-
-                    sqlConn.Open();
-
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        if (reader.HasRows)
-                        {
-                            reader.Read();
-
-                            return new Room(
-                                (int)reader["RoomId"],
-                                (string)reader["RoomName"],
-                                new User((int)reader["UserId"], (string)reader["Username"]),
-                                (string)reader["ProgrammeName"],
-                                new TimeSpan(0, 0, (int)reader["ProgrammeRuntimeInSeconds"]),
-                                (DateTime)reader["ProgrammeStartTime"]);
-                        }
-                        else
-                        {
-                            return null;
-                        }
-                    }
-
-                }
-            }
+            return dbContext.Rooms.Find(roomId);
         }
 
         public void AddUser(int roomId, int userId, string connectionId)
         {
-            using (var sqlConn = new SqlConnection(Server))
-            {
-                using (var cmd = new SqlCommand("dbo.AddUserToRoom", sqlConn))
+            var user = dbContext.Users.Find(userId);
+
+            dbContext.Rooms.Find(roomId)
+                .Members.Add(new RoomMember
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add(new SqlParameter("@RoomId", roomId));
-                    cmd.Parameters.Add(new SqlParameter("@UserId", userId));
-                    cmd.Parameters.Add(new SqlParameter("@ConnectionId", connectionId));
+                    UserId = userId,
+                    Username = user.Username,
+                    Role = RoomRole.Watcher,
+                    ConnectionId = connectionId
+                });
 
-                    sqlConn.Open();
-
-                    cmd.ExecuteNonQuery();
-                }
-            }
+            dbContext.SaveChanges();
         }
 
         public int? RemoveUser(int userId, string connectionId)
         {
-            using (var sqlConn = new SqlConnection(Server))
+            var memberToRemove = dbContext.RoomMembers
+                .FirstOrDefault(m => m.ConnectionId == connectionId && m.UserId == userId);
+
+            dbContext.RoomMembers.Remove(memberToRemove);
+            dbContext.SaveChanges();
+            return memberToRemove.RoomId;
+        }
+
+        // ToDo: Put Limit on and log error
+        private string GenerateInviteCode()
+        {
+            string generatedCode = null;
+
+            do
             {
-                using (var cmd = new SqlCommand("dbo.RemoveUserFromRoom", sqlConn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add(new SqlParameter("@UserId", userId));
-                    cmd.Parameters.Add(new SqlParameter("@ConnectionId", connectionId));
-
-                    sqlConn.Open();
-
-                    var result = (int)cmd.ExecuteScalar();
-
-                    return result == 0 ? (int?)null : result;
-                }
+                generatedCode = Guid.NewGuid().ToString("n").Substring(0, 8);
             }
+            while (dbContext.Rooms.Any(r => r.InviteCode == generatedCode));
+
+            return generatedCode;
         }
     }
 }

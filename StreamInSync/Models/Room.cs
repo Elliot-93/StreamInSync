@@ -1,35 +1,31 @@
-﻿using System;
-
-namespace StreamInSync.Models
+﻿namespace StreamInSync.Models
 {
+    using System;
+    using System.Collections.Generic;
+
     public class Room
     {
-        public Room(
-            int id, 
-            string name, 
-            User owner, 
-            string programmeName, 
-            TimeSpan runtimeInSeconds,
-            DateTime programmeStartTime)
+        public Room()
         {
-            Id = id;
-            Name = name;
-            Owner = owner;
-            ProgrammeName = programmeName;
-            Runtime = runtimeInSeconds;
-            ProgrammeStartTime = programmeStartTime;
+            Members = new List<RoomMember>();
         }
 
-        public int Id { get; private set; }
+        public int Id { get; set; }
 
-        public string Name { get; private set; }
+        public string Name { get; set; }
 
-        public User Owner { get; private set; }
+        public string Password { get; set; }
 
-        public string ProgrammeName { get; private set; }
+        public string InviteCode { get; set; }
 
-        public TimeSpan Runtime { get; private set; }
+        public virtual User Owner { get; set; }
 
-        public DateTime ProgrammeStartTime { get; private set; }
+        public virtual IList<RoomMember> Members { get; set; }
+
+        public string ProgrammeName { get; set; }
+
+        public TimeSpan Runtime { get; set; }
+
+        public DateTime ProgrammeStartTime { get; set; }
     }
 }

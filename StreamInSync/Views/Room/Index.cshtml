@@ -4,18 +4,19 @@
 @section Scripts {
     <script src="~/Scripts/jquery.signalR-2.2.2.js"></script>
     <script src="~/SignalR/hubs"></script>
-    <script>var room = @Html.Raw(Json.Encode(Model))</script>
+    <script>var room = @Html.Raw(Model.JsonRoom)</script>
     <script src="~/Scripts/room.js"></script>
 }
 <h1>@Model.Room.Name</h1>
 <h3>Owner: @Model.Room.Owner.Username</h3>
-<h2>Programme Name: @Model.Room.ProgrammeName</h2>
-<h2>Programme Runtime: @Model.Room.Runtime</h2>
-<h2>Programme Start Time: @Model.Room.ProgrammeStartTime</h2>
-<h3>Users</h3>
+<h3>Programme Name: @Model.Room.ProgrammeName</h3>
+<h3>Programme Runtime: @Model.Room.Runtime</h3>
+<h3>Programme Start Time: @Model.Room.ProgrammeStartTime</h3>
+<h3>Invite Code: @Model.Room.InviteCode</h3>
+<h4>Users</h4>
 <div class="userList">
-    @foreach (var user in Model.Users)
+    @foreach (var member in Model.Room.Members)
     {
-        <p>@user.Username</p>
+        <p>@member.Username</p>
     }
 </div>

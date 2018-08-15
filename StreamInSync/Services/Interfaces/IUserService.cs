@@ -9,6 +9,6 @@ namespace StreamInSync.Services
 
         User Get(string username, string password);
 
-        IEnumerable<User> GetUsers(int roomId);
+        User Get(int userId);
     }
 }

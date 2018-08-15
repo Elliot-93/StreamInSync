@@ -1,87 +1,38 @@
-﻿using StreamInSync.Models;
-using StreamInSync.Respository.Interfaces;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-
-namespace StreamInSync.Respository
+﻿namespace StreamInSync.Respository
 {
+    using StreamInSync.Data;
+    using StreamInSync.Models;
+    using StreamInSync.Respository.Interfaces;
+    using System.Linq;
+
     public class UserRepository : IUserRepository
     {
-        private const string Server = @"Server=localhost\SQLEXPRESS03;Database=StreamInSync;Trusted_Connection=True;";
+        private readonly SiteDbContext dbContext;
+
+        public UserRepository()
+        {
+            dbContext = new SiteDbContext();
+        }
 
         public bool Create(RegisterVM newUser)
         {
-            using (var sqlConn = new SqlConnection(Server))
+            if (dbContext.Users.Any(u => u.Username == newUser.Username))
             {
-                using (var cmd = new SqlCommand("dbo.CreateUser", sqlConn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add(new SqlParameter("@Username", newUser.Username));
-                    cmd.Parameters.Add(new SqlParameter("@Password", newUser.Password));
-
-                    sqlConn.Open();
-
-                    return (int)cmd.ExecuteScalar() == 1;
-                }
+                return false;
             }
+
+            dbContext.Users.Add(new User { Username = newUser.Username, Password = newUser.Password });
+            return dbContext.SaveChanges() == 1;
         }
 
         public User Get(string username, string password)
         {
-            using (var sqlConn = new SqlConnection(Server))
-            {
-                using (var cmd = new SqlCommand("dbo.GetUserByUsernameAndPassword", sqlConn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add(new SqlParameter("@Username", username));
-                    cmd.Parameters.Add(new SqlParameter("@Password", password));
-
-                    sqlConn.Open();
-
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        if (reader.HasRows)
-                        {
-                            reader.Read();
-
-                            return new User((int)reader["Id"], (string)reader["Username"]);                        
-                        }
-                        else
-                        {
-                            return null;
-                        }
-                    }
-
-                }
-            }
+            return dbContext.Users.FirstOrDefault(u => u.Username == username && u.Password == password);
         }
 
-        public IList<User> GetUsers(int roomId)
+        public User Get(int userId)
         {
-            using (var sqlConn = new SqlConnection(Server))
-            {
-                using (var cmd = new SqlCommand("dbo.GetUsersInRoom", sqlConn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add(new SqlParameter("@RoomId", roomId));
-
-                    sqlConn.Open();
-
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        var users = new List<User>();
-
-                        while (reader.Read())
-                        {
-                            users.Add(new User((int)reader["Id"], (string)reader["Username"]));
-                        }
-
-                        return users;
-                    }
-
-                }
-            }
+            return dbContext.Users.Find(userId);
         }
     }
 }

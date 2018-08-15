@@ -1,65 +1,81 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNet.SignalR;
-using StreamInSync.Services;
-using System.Linq;
-using System.Web.Security;
-using StreamInSync.Models;
-using Newtonsoft.Json;
-
-namespace StreamInSync.Hubs
+﻿namespace StreamInSync.Hubs
 {
+    using System.Threading.Tasks;
+    using Microsoft.AspNet.SignalR;
+    using StreamInSync.Services;
+    using System.Linq;
+    using System.Web.Security;
+    using Newtonsoft.Json;
+
     public class RoomHub : Hub
     {
         private readonly IRoomService roomService;
-        private readonly IUserService userService;
 
         public RoomHub()
         {
             roomService = new RoomService();
-            userService = new UserService();
         }
 
         public void JoinRoom(int roomId)
         {
+            var userId = GetUserId();
+
+            if (userId == null)
+            {
+                return;
+            }
+
             Groups.Add(Context.ConnectionId, roomId.ToString());
 
-            roomService.AddUser(roomId, GetUser().Id, Context.ConnectionId);
+            roomService.AddUser(roomId, userId.Value, Context.ConnectionId);
 
-            Clients.Group(roomId.ToString()).updateRoomUsers(userService.GetUsers(roomId).ToArray());
+            Clients.Group(roomId.ToString()).updateRoomUsers(roomService.Get(roomId).Members.ToArray());
         }
 
         public void LeaveRoom(int roomId)
         {
+            var userId = GetUserId();
+
+            if (userId == null)
+            {
+                return;
+            }
+
             Groups.Add(Context.ConnectionId, roomId.ToString());
 
-            roomService.AddUser(roomId, GetUser().Id, Context.ConnectionId);
+            roomService.AddUser(roomId, userId.Value, Context.ConnectionId);
 
-            Clients.Group(roomId.ToString()).updateRoomUsers(userService.GetUsers(roomId).ToArray());
+            Clients.Group(roomId.ToString()).updateRoomUsers(roomService.Get(roomId).Members.ToArray());
         }
 
         public override Task OnDisconnected(bool stopCalled)
         {
-            var user = GetUser();
+            var userId = GetUserId();
 
-            var roomId = roomService.RemoveUser(GetUser().Id, Context.ConnectionId);
+            if (userId == null)
+            {
+                return base.OnDisconnected(stopCalled);
+            }
+
+            var roomId = roomService.RemoveUser(userId.Value, Context.ConnectionId);
 
             if (roomId != null)
             {
-                Clients.Group(roomId.ToString()).updateRoomUsers(userService.GetUsers((int)roomId).ToArray());
+                Clients.Group(roomId.ToString()).updateRoomUsers(roomService.Get(roomId.Value).Members.ToArray());
             }
 
             return base.OnDisconnected(stopCalled);
         }
 
-        private User GetUser()
+        private int? GetUserId()
         {
             var authCookie = Context.RequestCookies[FormsAuthentication.FormsCookieName];
-            User user = null;
+            int? user = null;
             if (authCookie != null)
             {
                 var authTicket = FormsAuthentication.Decrypt(authCookie.Value);
 
-                user = JsonConvert.DeserializeObject<User>(authTicket.UserData);
+                user = JsonConvert.DeserializeObject<int>(authTicket.UserData);
             }
             return user;
         }
