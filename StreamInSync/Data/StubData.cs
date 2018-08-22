@@ -12,13 +12,13 @@ namespace StreamInSync.Data
             {
                 new User
                 {
-                    Id = 1,
+                    UserId = 1,
                     Username = "UserOne",
                     Password = "password"
                 },
                 new User
                 {
-                    Id = 2,
+                    UserId = 2,
                     Username = "UserTwo",
                     Password = "passwordTwo"
                 }
@@ -31,9 +31,9 @@ namespace StreamInSync.Data
             {
                 new Room
                 {
-                    Id = 1,
+                    RoomId = 1,
                     Name = "The Handmaids Tale",
-                    InviteCode = "H4HF4",
+                    InviteCode = "4gg4y7ur",
                     Owner = dbContext.Users.Find(1),
                     Members = new List<RoomMember>(),
                     ProgrammeName = "The Handmaids Tale",

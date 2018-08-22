@@ -1,12 +1,32 @@
 ﻿@{ Layout = "~/Views/Shared/_Layout.cshtml"; }
 
 @section Title {Home}
+@model StreamInSync.Models.HomeVM
 
 <div class="row">
     <div class="col-md-4">
         <h2>Your Rooms</h2>
-        <p>Table of rooms here</p>
-    </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Programme</th>
+                    <th>Start Time</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var userRoom in Model.UserRooms)
+            {
+                <tr>
+                    <td><a href="@userRoom.Link">@userRoom.Room.Name</a></td>
+                    <td><a href="@userRoom.Link">@userRoom.Room.ProgrammeName</a></td>
+                    <td><a href="@userRoom.Link">@userRoom.Room.ProgrammeStartTime</a></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+
+</div>
     <div class="col-md-4">
         <h2>Start new room</h2>
         <p>@Html.ActionLink("Create", "Create", "Room")</p>

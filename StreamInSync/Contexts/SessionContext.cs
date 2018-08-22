@@ -18,7 +18,7 @@ namespace StreamInSync.Contexts
 
         public void SetAuthCookie(User user)
         {
-            var userData = JsonConvert.SerializeObject(user.Id);
+            var userData = JsonConvert.SerializeObject(user.UserId);
 
             var authTicket = new FormsAuthenticationTicket(1, user.Username, DateTime.Now, DateTime.Now.AddYears(1), true, userData);
 

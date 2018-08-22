@@ -1,4 +1,5 @@
 ﻿using StreamInSync.Models;
+using System.Collections.Generic;
 
 namespace StreamInSync.Services
 {
@@ -9,6 +10,8 @@ namespace StreamInSync.Services
         Room Get(string inviteCode, string password);
 
         Room Get(int roomId);
+
+        IEnumerable<Room> GetUsersRooms(int userId);
 
         void AddUser(int roomId, int userId, string connectionId);
 

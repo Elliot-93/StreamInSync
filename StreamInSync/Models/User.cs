@@ -8,10 +8,10 @@
     {
         public User()
         {
-            Rooms = new List<Room>();
+            FavoriteRooms = new List<Room>();
         }
 
-        public int Id { get; set; }
+        public int UserId { get; set; }
 
         [Index(IsUnique = true)]
         [Column(TypeName = "VARCHAR")]
@@ -21,6 +21,8 @@
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        public IList<Room> Rooms { get; set; }
+        public ICollection<Room> FavoriteRooms { get; set; }
+
+        public ICollection<RoomMember> JoinedRooms { get; set; }
     }
 }

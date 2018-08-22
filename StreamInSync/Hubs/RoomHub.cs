@@ -29,7 +29,9 @@
 
             roomService.AddUser(roomId, userId.Value, Context.ConnectionId);
 
-            Clients.Group(roomId.ToString()).updateRoomUsers(roomService.Get(roomId).Members.ToArray());
+            Clients
+                .Group(roomId.ToString())
+                .updateRoomUsers(roomService.Get(roomId).Members.Select(m => new { m.Username }).ToArray());
         }
 
         public void LeaveRoom(int roomId)

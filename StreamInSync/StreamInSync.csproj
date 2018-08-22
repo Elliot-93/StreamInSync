@@ -182,12 +182,14 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Hubs\RoomHub.cs" />
-    <Compile Include="Migrations\Site\201808151755116_InitialCreate.cs" />
-    <Compile Include="Migrations\Site\201808151755116_InitialCreate.Designer.cs">
-      <DependentUpon>201808151755116_InitialCreate.cs</DependentUpon>
+    <Compile Include="Migrations\Site\201808212037041_InitialCreate.cs" />
+    <Compile Include="Migrations\Site\201808212037041_InitialCreate.Designer.cs">
+      <DependentUpon>201808212037041_InitialCreate.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Site\Configuration.cs" />
     <Compile Include="Models\RoomMember.cs" />
+    <Compile Include="Models\ViewModels\HomeVM.cs" />
+    <Compile Include="Models\ViewModels\UserRoomVM.cs" />
     <Compile Include="Models\ViewModels\RoomVM.cs" />
     <Compile Include="Models\RoomAuthCookieData.cs" />
     <Compile Include="Models\ViewModels\JoinRoomVM.cs" />
@@ -196,9 +198,9 @@
     <Compile Include="Models\ViewModels\RegisterVM.cs" />
     <Compile Include="Models\Room.cs" />
     <Compile Include="Models\User.cs" />
-    <Compile Include="Models\RoomInfo.cs" />
-    <Compile Include="Models\Homepage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Provider\Interfaces\IUserRoomVMProvider.cs" />
+    <Compile Include="Provider\UserRoomVMProvider.cs" />
     <Compile Include="Respository\Interfaces\IRoomRepositorycs.cs" />
     <Compile Include="Respository\Interfaces\IUserRepositorycs.cs" />
     <Compile Include="Respository\RoomRepository.cs" />
@@ -281,8 +283,8 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\Site\201808151755116_InitialCreate.resx">
-      <DependentUpon>201808151755116_InitialCreate.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\Site\201808212037041_InitialCreate.resx">
+      <DependentUpon>201808212037041_InitialCreate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

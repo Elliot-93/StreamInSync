@@ -9,13 +9,14 @@ namespace StreamInSync.Migrations.Site
         public Configuration()
         {
             AutomaticMigrationsEnabled = true;
+            AutomaticMigrationDataLossAllowed = true;
             MigrationsDirectory = @"Migrations\Site";
         }
 
         protected override void Seed(SiteDbContext context)
         {
-            context.Users.AddOrUpdate(u => u.Id, StubData.Users().ToArray());
-            context.Rooms.AddOrUpdate(r => r.Id, StubData.Rooms(context).ToArray());
+            context.Users.AddOrUpdate(u => u.UserId, StubData.Users().ToArray());
+            context.Rooms.AddOrUpdate(r => r.RoomId, StubData.Rooms(context).ToArray());
 
             context.SaveChanges();            
         }

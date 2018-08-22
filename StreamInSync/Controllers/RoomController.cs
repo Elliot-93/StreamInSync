@@ -20,13 +20,13 @@ namespace StreamInSync.Controllers
 
         public ActionResult Index(int roomId)
         {
-            //get room if public fine. If private check on auth token - authenticatedPrivateRoomIds
+            //todo: get room if public fine. If private check on auth token - authenticatedPrivateRoomIds
 
             var room = roomService.Get(roomId);
 
             if (room != null)
             {
-                var roomJson = new { room.Id };
+                var roomJson = new { room.RoomId };
 
                 return View(new RoomVM(room, JsonConvert.SerializeObject(roomJson)));
             }
@@ -50,7 +50,7 @@ namespace StreamInSync.Controllers
                 if (room != null)
                 {
                     // ToDo: do this in routing intialisation?
-                    return RedirectToAction("Index", new { roomId = room.Id });
+                    return RedirectToAction("Index", new { roomId = room.RoomId });
                 }
             }
 
@@ -72,7 +72,7 @@ namespace StreamInSync.Controllers
 
                 if (room != null)
                 {
-                    return RedirectToAction("Index", new { roomId = room.Id });
+                    return RedirectToAction("Index", new { roomId = room.RoomId });
                 }
             }
 

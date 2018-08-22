@@ -10,7 +10,7 @@
             Members = new List<RoomMember>();
         }
 
-        public int Id { get; set; }
+        public int RoomId { get; set; }
 
         public string Name { get; set; }
 
@@ -18,14 +18,16 @@
 
         public string InviteCode { get; set; }
 
-        public virtual User Owner { get; set; }
+        public User Owner { get; set; }
 
-        public virtual IList<RoomMember> Members { get; set; }
+        public ICollection<RoomMember> Members { get; set; }
 
         public string ProgrammeName { get; set; }
 
         public TimeSpan Runtime { get; set; }
 
         public DateTime ProgrammeStartTime { get; set; }
+
+        public ICollection<User> UsersFavorited { get; set; }
     }
 }

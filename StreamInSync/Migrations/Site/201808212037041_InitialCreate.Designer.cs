@@ -13,7 +13,7 @@ namespace StreamInSync.Migrations.Site
         
         string IMigrationMetadata.Id
         {
-            get { return "201808151755116_InitialCreate"; }
+            get { return "201808212037041_InitialCreate"; }
         }
         
         string IMigrationMetadata.Source

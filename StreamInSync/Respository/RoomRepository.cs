@@ -5,6 +5,8 @@
     using StreamInSync.Models;
     using StreamInSync.Respository.Interfaces;
     using System;
+    using System.Collections.Generic;
+    using System.Data.Entity;
     using System.Linq;
 
     public class RoomRepository : IRoomRepository
@@ -47,21 +49,38 @@
 
         public Room Get(int roomId)
         {
-            return dbContext.Rooms.Find(roomId);
+            return dbContext.Rooms
+                .Where(r => r.RoomId == roomId)
+                .Include(r => r.Owner)
+                .FirstOrDefault();
+        }
+
+        public IEnumerable<Room> GetUsersRooms(int userId)
+        {
+            return dbContext.Rooms.Where(r => r.Owner.UserId == userId);
         }
 
         public void AddUser(int roomId, int userId, string connectionId)
         {
             var user = dbContext.Users.Find(userId);
 
-            dbContext.Rooms.Find(roomId)
-                .Members.Add(new RoomMember
+            var roomMembers = dbContext.Rooms.Include(r => r.Members).Single(r => r.RoomId == roomId).Members;
+
+            var exisitingUser = roomMembers.FirstOrDefault(rm => rm.UserId == userId);
+            if (exisitingUser != null)
+            {
+                exisitingUser.ConnectionId = connectionId;
+            }
+            else
+            {
+                roomMembers.Add(new RoomMember
                 {
                     UserId = userId,
                     Username = user.Username,
                     Role = RoomRole.Watcher,
                     ConnectionId = connectionId
                 });
+            }
 
             dbContext.SaveChanges();
         }
@@ -70,6 +89,11 @@
         {
             var memberToRemove = dbContext.RoomMembers
                 .FirstOrDefault(m => m.ConnectionId == connectionId && m.UserId == userId);
+
+            if (memberToRemove == null)
+            {
+                return null;
+            }
 
             dbContext.RoomMembers.Remove(memberToRemove);
             dbContext.SaveChanges();

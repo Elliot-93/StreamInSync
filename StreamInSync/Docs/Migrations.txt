@@ -13,3 +13,6 @@ Add-Migration InitialCreate
 
 //Run Seed Method
 update-database -ConfigurationTypeName StreamInSync.Migrations.Site.Configuration
+
+// Force for allow data loss
+Update-Database -Force –Verbose
