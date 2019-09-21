@@ -23,7 +23,6 @@ namespace StreamInSync.Models
 
         [Required(ErrorMessage = "Please provide a programme start time.")]
         [DataType(DataType.DateTime)]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:H:mm dd/MM/yyyy}")]
         public DateTime ProgrammeStartTime { get; set; }
 
         public bool Success { get; set; }

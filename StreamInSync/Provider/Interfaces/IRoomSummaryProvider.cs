@@ -3,8 +3,8 @@ using StreamInSync.Models;
 
 namespace StreamInSync.Provider
 {
-    public interface IUserRoomVMProvider
+    public interface IRoomSummaryProvider
     {
-        IEnumerable<UserRoomVM> UsersRooms(int userId);
+        IEnumerable<RoomSummaryVM> UsersRooms(int userId);
     }
 }

@@ -1,66 +1,70 @@
 ﻿@{ Layout = "~/Views/Shared/_Layout.cshtml"; }
 
 @section Title {Create Room}
+@section Styles { @Styles.Render("~/css/create-room") }
+@section Scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+}
 @model StreamInSync.Models.CreateRoomVM
-@using (Html.BeginForm("Create", "Room", FormMethod.Post, new { autocomplete = "off"}))
+@using (Html.BeginForm("Create", "Room", FormMethod.Post, new { autocomplete = "off" }))
 {
     @Html.ValidationSummary(true)
-    <fieldset>
-        <legend>Create Room</legend>
-        @Html.AntiForgeryToken()
+<fieldset>
+    <legend>Create Room</legend>
+    @Html.AntiForgeryToken()
 
-        @if (Model != null && Model.Success == false)
-        {
-            <div class="alert alert-info" role="alert">
-                Room name already taken :( Try Again.
-            </div>
-        }
+    @if (Model != null && Model.Success == false)
+    {
+        <div class="alert alert-info" role="alert">
+            Room name already taken :( Try Again.
+        </div>
+    }
 
-        <div class="editor-label">
-            @Html.LabelFor(model => model.Name)
-        </div>
-        <div class="editor-field">
-            @Html.EditorFor(model => model.Name)
-            @Html.ValidationMessageFor(model => model.Name)
-        </div>
-        <br>
-        <div class="editor-label">
-            @Html.LabelFor(model => model.Password)
-        </div>
-        <div class="editor-field">
-            @Html.EditorFor(model => model.Password, new { htmlAttributes = new { placeholder = "Optional"} })
-            @Html.ValidationMessageFor(model => model.Password)
-        </div>
-        <br>
-        <div class="editor-label">
-            @Html.LabelFor(model => model.ProgrammeName)
-        </div>
-        <div class="editor-field">
-            @Html.EditorFor(model => model.ProgrammeName)
-            @Html.ValidationMessageFor(model => model.ProgrammeName)
-        </div>
-        <br>
-        <div class="editor-label">
-            <label for="RuntimeInSeconds">Programme Runtime</label>
-        </div>
-        <div class="editor-field">
-            @Html.EditorFor(model => model.RuntimeInSeconds)
-            @Html.ValidationMessageFor(model => model.RuntimeInSeconds)
-        </div>
-        <br>
-        <div class="editor-label">
-            @Html.LabelFor(model => model.ProgrammeStartTime)
-        </div>
-        <div class="editor-field">
-            @Html.EditorFor(model => model.ProgrammeStartTime)
-            @Html.ValidationMessageFor(model => model.ProgrammeStartTime)
-        </div>
-        <br>
-        <p>
-            <input type="submit" value="Create" />
-        </p>
-    </fieldset>
-}
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
+    <div class="editor-label">
+        @Html.LabelFor(model => model.Name)
+    </div>
+    <div class="editor-field">
+        @Html.EditorFor(model => model.Name)
+        @Html.ValidationMessageFor(model => model.Name, null, new { @class = "validation-text" })
+    </div>
+    <br>
+    <div class="editor-label">
+        @Html.LabelFor(model => model.Password)
+    </div>
+    <div class="editor-field">
+        @Html.EditorFor(model => model.Password, new { htmlAttributes = new { placeholder = "Optional" } })
+        @Html.ValidationMessageFor(model => model.Password, null, new { @class = "validation-text" })
+    </div>
+    <br>
+    <div class="editor-label">
+        <label for="ProgrammeName">Programme Name</label>
+    </div>
+    <div class="editor-field">
+        @Html.EditorFor(model => model.ProgrammeName)
+        @Html.ValidationMessageFor(model => model.ProgrammeName, null, new { @class = "validation-text" })
+    </div>
+    <br>
+    <div class="editor-label">
+        <label for="RuntimeInSeconds">Programme Runtime</label>
+    </div>
+    <div class="editor-field">
+        <input type="time" min="00:01" max="12:00" data-val="true" data-val-required="Please provide a programme runtime." id="RuntimeInSeconds" name="RuntimeInSeconds" required>
+        <span>hh:mm</span>
+        @Html.ValidationMessageFor(model => model.RuntimeInSeconds, null, new { @class = "validation-text" })
+    </div>
+    <br>
+    <div class="editor-label">
+        <label for="ProgrammeStartTime">Programme Start Time</label>
+    </div>
+    <div class="editor-field">
+        <input type="datetime-local" data-val="true" data-val-date="The field ProgrammeStartTime must be a date." data-val-required="Please provide a programme start time." id="ProgrammeStartTime" name="ProgrammeStartTime" min="@DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm")" max="@DateTime.UtcNow.AddYears(1).ToString("yyyy-MM-ddTHH:mm")" value="@DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm")" required>
+        @Html.ValidationMessageFor(model => model.ProgrammeStartTime, null, new { @class = "validation-text" })
+    </div>
+
+    <br>
+    <p>
+        <input type="submit" value="Create" />
+    </p>
+</fieldset>
 }

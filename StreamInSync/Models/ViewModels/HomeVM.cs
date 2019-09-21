@@ -4,11 +4,11 @@ namespace StreamInSync.Models
 {
     public class HomeVM
     {
-        public HomeVM(IEnumerable<UserRoomVM> userRooms)
+        public HomeVM(IEnumerable<RoomSummaryVM> userRooms)
         {
             UserRooms = userRooms;
         }
 
-        public IEnumerable<UserRoomVM> UserRooms { get; private set; }
+        public IEnumerable<RoomSummaryVM> UserRooms { get; private set; }
     }
 }

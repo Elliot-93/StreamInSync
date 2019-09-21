@@ -9,18 +9,18 @@ namespace StreamInSync.Controllers
     public class HomeController : Controller
     {
         private readonly ISessionContext sessionContext;
-        private readonly IUserRoomVMProvider userRoomVMProvider;
+        private readonly IRoomSummaryProvider userRoomVMProvider;
 
         public HomeController()
         {
             sessionContext = new SessionContext();
-            userRoomVMProvider = new UserRoomVMProvider();
+            userRoomVMProvider = new RoomSummaryProvider();
         }
 
         public ActionResult Index()
         {
             var user = sessionContext.GetUser();
-            var userRooms = Enumerable.Empty<UserRoomVM>();
+            var userRooms = Enumerable.Empty<RoomSummaryVM>();
 
             if (user != null)
             {

@@ -31,7 +31,7 @@
 
             Clients
                 .Group(roomId.ToString())
-                .updateRoomUsers(roomService.Get(roomId).Members.Select(m => new { m.Username }).ToArray());
+                .updateRoomUsers(GetSerializableRoomMembers(roomId));
         }
 
         public void LeaveRoom(int roomId)
@@ -47,7 +47,7 @@
 
             roomService.AddUser(roomId, userId.Value, Context.ConnectionId);
 
-            Clients.Group(roomId.ToString()).updateRoomUsers(roomService.Get(roomId).Members.ToArray());
+            Clients.Group(roomId.ToString()).updateRoomUsers(GetSerializableRoomMembers(roomId));
         }
 
         public override Task OnDisconnected(bool stopCalled)
@@ -63,7 +63,7 @@
 
             if (roomId != null)
             {
-                Clients.Group(roomId.ToString()).updateRoomUsers(roomService.Get(roomId.Value).Members.ToArray());
+                Clients.Group(roomId.ToString()).updateRoomUsers(GetSerializableRoomMembers(roomId.Value));
             }
 
             return base.OnDisconnected(stopCalled);
@@ -80,6 +80,11 @@
                 user = JsonConvert.DeserializeObject<int>(authTicket.UserData);
             }
             return user;
+        }
+
+        private object[] GetSerializableRoomMembers(int roomId)
+        {
+            return roomService.Get(roomId).Members.Select(m => new { m.Username }).ToArray();
         }
     }
 }

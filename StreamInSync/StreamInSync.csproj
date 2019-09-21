@@ -164,7 +164,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Contexts\ISessionContext.cs" />
@@ -189,7 +188,7 @@
     <Compile Include="Migrations\Site\Configuration.cs" />
     <Compile Include="Models\RoomMember.cs" />
     <Compile Include="Models\ViewModels\HomeVM.cs" />
-    <Compile Include="Models\ViewModels\UserRoomVM.cs" />
+    <Compile Include="Models\ViewModels\RoomSummaryVM.cs" />
     <Compile Include="Models\ViewModels\RoomVM.cs" />
     <Compile Include="Models\RoomAuthCookieData.cs" />
     <Compile Include="Models\ViewModels\JoinRoomVM.cs" />
@@ -199,8 +198,8 @@
     <Compile Include="Models\Room.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Provider\Interfaces\IUserRoomVMProvider.cs" />
-    <Compile Include="Provider\UserRoomVMProvider.cs" />
+    <Compile Include="Provider\Interfaces\IRoomSummaryProvider.cs" />
+    <Compile Include="Provider\RoomSummaryProvider.cs" />
     <Compile Include="Respository\Interfaces\IRoomRepositorycs.cs" />
     <Compile Include="Respository\Interfaces\IUserRepositorycs.cs" />
     <Compile Include="Respository\RoomRepository.cs" />
@@ -215,13 +214,13 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\Home.css" />
+    <Content Include="Content\create-room.css" />
     <Content Include="Docs\Migrations.txt" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
-    <Content Include="Scripts\bootstrap.js" />
-    <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -229,20 +228,21 @@
     <Content Include="Content\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
-    <None Include="Scripts\jquery-1.10.2.intellisense.js" />
-    <Content Include="Scripts\jquery-1.10.2.js" />
-    <Content Include="Scripts\jquery-1.10.2.min.js" />
-    <None Include="Scripts\jquery.validate-vsdoc.js" />
-    <Content Include="Scripts\jquery.signalR-2.2.2.js" />
-    <Content Include="Scripts\jquery.signalR-2.2.2.min.js" />
-    <Content Include="Scripts\jquery.validate.js" />
-    <Content Include="Scripts\jquery.validate.min.js" />
-    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
-    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
-    <Content Include="Scripts\modernizr-2.6.2.js" />
-    <Content Include="Scripts\respond.js" />
-    <Content Include="Scripts\respond.min.js" />
+    <None Include="Scripts\Libraries\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\Libraries\jquery.signalR-2.2.2.js" />
+    <Content Include="Scripts\Libraries\jquery.signalR-2.2.2.min.js" />
+    <Content Include="Scripts\Libraries\jquery.validate.js" />
+    <Content Include="Scripts\Libraries\jquery.validate.min.js" />
+    <Content Include="Scripts\Libraries\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\Libraries\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\Libraries\modernizr-2.6.2.js" />
+    <Content Include="Scripts\Libraries\moment.js" />
+    <Content Include="Scripts\Libraries\moment.min.js" />
+    <Content Include="Scripts\create-room.js" />
     <Content Include="Scripts\room.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -264,23 +264,14 @@
     <Content Include="Views\HeaderRightSide\LoggedIn.cshtml" />
     <Content Include="Views\Room\Index.cshtml" />
     <Content Include="Views\Room\Join.cshtml" />
+    <Content Include="Views\Partials\RoomSummary.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Users\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="fonts\glyphicons-halflings-regular.woff" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="fonts\glyphicons-halflings-regular.eot" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
-    <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\Site\201808212037041_InitialCreate.resx">

@@ -1,5 +1,7 @@
 ﻿@{Layout = null;}
-<ul class="nav navbar-nav navbar-right">
-    <li>@Html.ActionLink("Register", "Index", "Register")</li>
-    <li>@Html.ActionLink("Log In", "LogIn", "Authentication")</li>
-</ul>
+<li class="nav-item active">
+    @Html.ActionLink("Register", "Index", "Register", new { },  new { @class = "nav-link" })
+</li>
+<li class="nav-item active">
+    @Html.ActionLink("Log In", "LogIn", "Authentication", new { }, new { @class = "nav-link" })
+</li>

@@ -1,38 +1,20 @@
 ﻿@{ Layout = "~/Views/Shared/_Layout.cshtml"; }
 
 @section Title {Home}
+@section Styles {@Styles.Render("~/css/home")}
 @model StreamInSync.Models.HomeVM
 
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
+        <h6>@Html.ActionLink("New Room", "Create", "Room")</h6>
+        <h6>@Html.ActionLink("Join", "Join", "Room")</h6>
         <h2>Your Rooms</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Programme</th>
-                    <th>Start Time</th>
-                </tr>
-            </thead>
-            <tbody>
-            @foreach (var userRoom in Model.UserRooms)
-            {
-                <tr>
-                    <td><a href="@userRoom.Link">@userRoom.Room.Name</a></td>
-                    <td><a href="@userRoom.Link">@userRoom.Room.ProgrammeName</a></td>
-                    <td><a href="@userRoom.Link">@userRoom.Room.ProgrammeStartTime</a></td>
-                </tr>
-            }
-            </tbody>
-        </table>
-
-</div>
-    <div class="col-md-4">
-        <h2>Start new room</h2>
-        <p>@Html.ActionLink("Create", "Create", "Room")</p>
+        @foreach (var userRoom in Model.UserRooms)
+        {
+            @Html.Partial("~/Views/Partials/RoomSummary.cshtml", userRoom)
+        }
     </div>
-    <div class="col-md-4">
-        <h2>Join Room</h2>
-        <p>@Html.ActionLink("Join", "Join", "Room")</p>
+
+    <div class="col-md-6">
     </div>
 </div>

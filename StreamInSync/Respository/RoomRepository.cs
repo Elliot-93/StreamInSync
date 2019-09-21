@@ -52,12 +52,15 @@
             return dbContext.Rooms
                 .Where(r => r.RoomId == roomId)
                 .Include(r => r.Owner)
+                .Include(r => r.Members)
                 .FirstOrDefault();
         }
 
         public IEnumerable<Room> GetUsersRooms(int userId)
         {
-            return dbContext.Rooms.Where(r => r.Owner.UserId == userId);
+            return dbContext.Rooms
+                .Include(r => r.Owner)
+                .Where(r => r.Owner.UserId == userId);
         }
 
         public void AddUser(int roomId, int userId, string connectionId)

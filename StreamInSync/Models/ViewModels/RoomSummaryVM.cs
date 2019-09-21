@@ -1,8 +1,8 @@
 ﻿namespace StreamInSync.Models
 {
-    public class UserRoomVM
+    public class RoomSummaryVM
     {
-        public UserRoomVM(Room room, string link)
+        public RoomSummaryVM(Room room, string link)
         {
             Room = room;
             Link = link;

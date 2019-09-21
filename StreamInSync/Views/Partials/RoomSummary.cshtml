@@ -1,0 +1,10 @@
+﻿@model StreamInSync.Models.RoomSummaryVM
+@{Layout = null;}
+
+<a href="@Model.Link">
+    <div class="room-summary">
+        <h4>@Model.Room.Name</h4>
+        <h6 class="show-name">Next Show: @Model.Room.ProgrammeName</h6>
+        <h6 class="show-name">Start Time: @Model.Room.ProgrammeStartTime</h6>
+    </div>
+</a>

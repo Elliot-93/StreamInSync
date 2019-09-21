@@ -32,13 +32,24 @@ namespace StreamInSync.Data
                 new Room
                 {
                     RoomId = 1,
-                    Name = "The Handmaids Tale",
+                    Name = "Show of the week",
                     InviteCode = "4gg4y7ur",
                     Owner = dbContext.Users.Find(1),
                     Members = new List<RoomMember>(),
                     ProgrammeName = "The Handmaids Tale",
                     Runtime = new TimeSpan(0, 40, 0),
                     ProgrammeStartTime = DateTime.Now.AddHours(2)
+                },
+                new Room
+                {
+                    RoomId = 2,
+                    Name = "Show of the month",
+                    InviteCode = "4gg4y7ur",
+                    Owner = dbContext.Users.Find(1),
+                    Members = new List<RoomMember>(),
+                    ProgrammeName = "Mr Robot",
+                    Runtime = new TimeSpan(0, 40, 0),
+                    ProgrammeStartTime = DateTime.Now.AddDays(2)
                 }
             };
         }
