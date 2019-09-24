@@ -6,6 +6,7 @@
     using System.Linq;
     using System.Web.Security;
     using Newtonsoft.Json;
+    using System;
 
     public class RoomHub : Hub
     {
@@ -16,7 +17,7 @@
             roomService = new RoomService();
         }
 
-        public void JoinRoom(int roomId)
+        public void JoinRoom(JoinRoom joinRoom)
         {
             var userId = GetUserId();
 
@@ -25,13 +26,13 @@
                 return;
             }
 
-            Groups.Add(Context.ConnectionId, roomId.ToString());
+            Groups.Add(Context.ConnectionId, joinRoom.RoomId.ToString());
 
-            roomService.AddUser(roomId, userId.Value, Context.ConnectionId);
+            roomService.AddUser(joinRoom.RoomId, userId.Value, Context.ConnectionId, UnixTimeStampToDateTime(joinRoom.LastUpdated));
 
             Clients
-                .Group(roomId.ToString())
-                .updateRoomUsers(GetSerializableRoomMembers(roomId));
+                .Group(joinRoom.RoomId.ToString())
+                .updateRoomUsers(GetSerializableRoomMembers(joinRoom.RoomId));
         }
 
         public void LeaveRoom(int roomId)
@@ -45,7 +46,7 @@
 
             Groups.Add(Context.ConnectionId, roomId.ToString());
 
-            roomService.AddUser(roomId, userId.Value, Context.ConnectionId);
+            roomService.RemoveUser(userId.Value, Context.ConnectionId);
 
             Clients.Group(roomId.ToString()).updateRoomUsers(GetSerializableRoomMembers(roomId));
         }
@@ -85,6 +86,11 @@
         private object[] GetSerializableRoomMembers(int roomId)
         {
             return roomService.Get(roomId).Members.Select(m => new { m.Username }).ToArray();
+        }
+
+        private static DateTime UnixTimeStampToDateTime(double unixTimeStamp)
+        {
+            return new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(unixTimeStamp);
         }
     }
 }

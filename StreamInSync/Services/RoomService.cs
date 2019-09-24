@@ -1,6 +1,7 @@
 ﻿using StreamInSync.Models;
 using StreamInSync.Respository;
 using StreamInSync.Respository.Interfaces;
+using System;
 using System.Collections.Generic;
 
 namespace StreamInSync.Services
@@ -36,9 +37,9 @@ namespace StreamInSync.Services
             return roomRepository.GetUsersRooms(userId);
         }
 
-        public void AddUser(int roomId, int userId, string connectionId)
+        public void AddUser(int roomId, int userId, string connectionId, DateTime lastUpdated)
         {
-            roomRepository.AddUser(roomId, userId, connectionId);
+            roomRepository.AddUser(roomId, userId, connectionId, lastUpdated);
         }
 
         public int? RemoveUser(int userId, string connectionId)

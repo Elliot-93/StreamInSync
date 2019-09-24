@@ -1,11 +1,12 @@
 ﻿@{ Layout = "~/Views/Shared/_Layout.cshtml"; }
 @model StreamInSync.Models.RoomVM
 @section Title {Create Room}
+@section Styles {@Styles.Render("~/Content/room")}
 @section Scripts {
     <script src="~/Scripts/Libraries/jquery.signalR-2.2.2.js"></script>
     <script src="~/SignalR/hubs"></script>
     <script>var room = @Html.Raw(Model.JsonRoom)</script>
-    <script src="~/Scripts/room.js"></script>
+    <script src="~/SignalR/Scripts/room.js"></script>
 }
 <h1>@Model.Room.Name</h1>
 <h3>Owner: @Model.Room.Owner.Username</h3>

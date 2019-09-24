@@ -164,6 +164,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Data\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Contexts\ISessionContext.cs" />
@@ -180,7 +181,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Hubs\RoomHub.cs" />
+    <Compile Include="SignalR\Hubs\RoomHub.cs" />
     <Compile Include="Migrations\Site\201808212037041_InitialCreate.cs" />
     <Compile Include="Migrations\Site\201808212037041_InitialCreate.Designer.cs">
       <DependentUpon>201808212037041_InitialCreate.cs</DependentUpon>
@@ -208,19 +209,21 @@
     <Compile Include="Services\Interfaces\IUserService.cs" />
     <Compile Include="Services\RoomService.cs" />
     <Compile Include="Services\UserService.cs" />
+    <Compile Include="SignalR\Models\JoinRoom.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
-    <Content Include="Content\Home.css" />
+    <Content Include="Content\room.css" />
+    <Content Include="Content\home.css" />
     <Content Include="Content\create-room.css" />
     <Content Include="Docs\Migrations.txt" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
-    <Content Include="Content\Site.css" />
+    <Content Include="Content\site.css" />
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -242,8 +245,7 @@
     <Content Include="Scripts\Libraries\modernizr-2.6.2.js" />
     <Content Include="Scripts\Libraries\moment.js" />
     <Content Include="Scripts\Libraries\moment.min.js" />
-    <Content Include="Scripts\create-room.js" />
-    <Content Include="Scripts\room.js" />
+    <Content Include="SignalR\Scripts\room.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -267,7 +269,6 @@
     <Content Include="Views\Partials\RoomSummary.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
     <Folder Include="Views\Users\" />
   </ItemGroup>
   <ItemGroup>

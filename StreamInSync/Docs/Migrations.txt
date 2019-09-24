@@ -9,10 +9,17 @@ Update-Database -TargetMigration $InitialDatabase
 Update-Database -Force -TargetMigration $InitialDatabase
 
 add-migration -ConfigurationTypeName StreamInSync.Migrations.Site.Configuration "InitialCreate"
-Add-Migration InitialCreate
+Add-Migration InitialCreate -Force
 
 //Run Seed Method
 update-database -ConfigurationTypeName StreamInSync.Migrations.Site.Configuration
 
 // Force for allow data loss
+Update-Database -Force –Verbose
+
+
+//Typical Schema Change While Devving
+Update-Database -Force -TargetMigration $InitialDatabase
+Add-Migration InitialCreate -Force
+Update-Database -ConfigurationTypeName StreamInSync.Migrations.Site.Configuration
 Update-Database -Force –Verbose

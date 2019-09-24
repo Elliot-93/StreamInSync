@@ -63,7 +63,7 @@
                 .Where(r => r.Owner.UserId == userId);
         }
 
-        public void AddUser(int roomId, int userId, string connectionId)
+        public void AddUser(int roomId, int userId, string connectionId, DateTime lastUpdated)
         {
             var user = dbContext.Users.Find(userId);
 
@@ -81,7 +81,9 @@
                     UserId = userId,
                     Username = user.Username,
                     Role = RoomRole.Watcher,
-                    ConnectionId = connectionId
+                    ConnectionId = connectionId, 
+                    LastUpdated = lastUpdated,
+                    ProgrammeTime = TimeSpan.Zero
                 });
             }
 

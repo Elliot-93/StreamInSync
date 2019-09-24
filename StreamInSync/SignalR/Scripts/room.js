@@ -2,7 +2,7 @@
     var roomHub = $.connection.roomHub;
     $.connection.hub.logging = true; //todo: take this out when deployed
     $.connection.hub.start().done(function () {
-        roomHub.server.joinRoom(room.RoomId);
+        roomHub.server.joinRoom({ RoomId: room.RoomId, LastUpdated: new Date().getTime() });
     });
 
     roomHub.client.updateRoomUsers = function (roomUsers) {
