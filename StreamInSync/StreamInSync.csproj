@@ -177,7 +177,9 @@
     <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Data\StreamInSyncContext.cs" />
     <Compile Include="Data\StubData.cs" />
+    <Compile Include="Enums\PlayStatus.cs" />
     <Compile Include="Enums\RoomRole.cs" />
+    <Compile Include="Extentions.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -201,20 +203,24 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Provider\Interfaces\IRoomSummaryProvider.cs" />
     <Compile Include="Provider\RoomSummaryProvider.cs" />
-    <Compile Include="Respository\Interfaces\IRoomRepositorycs.cs" />
-    <Compile Include="Respository\Interfaces\IUserRepositorycs.cs" />
-    <Compile Include="Respository\RoomRepository.cs" />
-    <Compile Include="Respository\UserRepository.cs" />
+    <Compile Include="Repository\Interfaces\IRoomRepositorycs.cs" />
+    <Compile Include="Repository\Interfaces\IUserRepositorycs.cs" />
+    <Compile Include="Repository\RoomRepository.cs" />
+    <Compile Include="Repository\UserRepository.cs" />
     <Compile Include="Services\Interfaces\IRoomService.cs" />
     <Compile Include="Services\Interfaces\IUserService.cs" />
     <Compile Include="Services\RoomService.cs" />
     <Compile Include="Services\UserService.cs" />
     <Compile Include="SignalR\Models\JoinRoom.cs" />
+    <Compile Include="SignalR\Models\ProgrammeTimeUpdate.cs" />
+    <Compile Include="Models\RoomMemberUpdate.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\break-icon-small.jpg" />
+    <Content Include="Content\break-icon.jpg" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\room.css" />
     <Content Include="Content\home.css" />
@@ -243,6 +249,8 @@
     <Content Include="Scripts\Libraries\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\Libraries\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\Libraries\modernizr-2.6.2.js" />
+    <Content Include="Scripts\Libraries\moment-with-locales.js" />
+    <Content Include="Scripts\Libraries\moment-with-locales.min.js" />
     <Content Include="Scripts\Libraries\moment.js" />
     <Content Include="Scripts\Libraries\moment.min.js" />
     <Content Include="SignalR\Scripts\room.js" />

@@ -26,7 +26,7 @@ namespace StreamInSync.Controllers
 
             if (room != null)
             {
-                var roomJson = new { room.RoomId };
+                var roomJson = new { room.RoomId, sessionContext.GetUser().UserId };
 
                 return View(new RoomVM(room, JsonConvert.SerializeObject(roomJson)));
             }

@@ -1,5 +1,4 @@
 ﻿using StreamInSync.Models;
-using System.Collections.Generic;
 
 namespace StreamInSync.Services
 {

@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace StreamInSync.Respository.Interfaces
+namespace StreamInSync.Repository.Interfaces
 {
     interface IRoomRepository
     {
@@ -12,5 +12,6 @@ namespace StreamInSync.Respository.Interfaces
         IEnumerable<Room> GetUsersRooms(int userId);
         void AddUser(int roomId, int userId, string connectionId, DateTime lastUpdated);
         int? RemoveUser(int userId, string connectionId);
+        bool UpdateRoomMember(RoomMemberUpdate roomMemberUpdate);
     }
 }

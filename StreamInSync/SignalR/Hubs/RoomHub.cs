@@ -7,6 +7,7 @@
     using System.Web.Security;
     using Newtonsoft.Json;
     using System;
+    using StreamInSync.Models;
 
     public class RoomHub : Hub
     {
@@ -33,6 +34,24 @@
             Clients
                 .Group(joinRoom.RoomId.ToString())
                 .updateRoomUsers(GetSerializableRoomMembers(joinRoom.RoomId));
+        }
+
+        //todo: Handle errors, return error message to user and log
+        public void UpdateRoomMember(ProgrammeTimeUpdate programmeTimeUpdate)
+        {
+            var userId = GetUserId();
+
+            if (userId == null)
+            {
+                return;
+            }
+
+            if (roomService.UpdateRoomMember(new RoomMemberUpdate(userId.Value, programmeTimeUpdate)))
+            {
+                Clients
+                    .Group(programmeTimeUpdate.RoomId.ToString())
+                    .updateRoomUsers(GetSerializableRoomMembers(programmeTimeUpdate.RoomId));
+            }
         }
 
         public void LeaveRoom(int roomId)
@@ -83,9 +102,18 @@
             return user;
         }
 
-        private object[] GetSerializableRoomMembers(int roomId)
+        private object GetSerializableRoomMembers(int roomId)
         {
-            return roomService.Get(roomId).Members.Select(m => new { m.Username }).ToArray();
+            return roomService.Get(roomId).Members.Select(m =>
+                    new
+                    {
+                        m.UserId,
+                        m.Username,
+                        m.LastUpdated,
+                        m.ProgrammeTimeSecs,
+                        m.InBreak,
+                        BreakTime = m.BreakTimeSecs ?? 0
+                    }).ToArray();
         }
 
         private static DateTime UnixTimeStampToDateTime(double unixTimeStamp)

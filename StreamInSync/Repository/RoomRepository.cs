@@ -1,9 +1,9 @@
-﻿namespace StreamInSync.Respository
+﻿namespace StreamInSync.Repository
 {
     using StreamInSync.Data;
     using StreamInSync.Enums;
     using StreamInSync.Models;
-    using StreamInSync.Respository.Interfaces;
+    using StreamInSync.Repository.Interfaces;
     using System;
     using System.Collections.Generic;
     using System.Data.Entity;
@@ -83,7 +83,7 @@
                     Role = RoomRole.Watcher,
                     ConnectionId = connectionId, 
                     LastUpdated = lastUpdated,
-                    ProgrammeTime = TimeSpan.Zero
+                    ProgrammeTimeSecs = 0
                 });
             }
 
@@ -103,6 +103,26 @@
             dbContext.RoomMembers.Remove(memberToRemove);
             dbContext.SaveChanges();
             return memberToRemove.RoomId;
+        }
+
+        public bool UpdateRoomMember(RoomMemberUpdate roomMemberUpdate)
+        {
+            var userProgrammeUpdate = roomMemberUpdate.ProgrammeTimeUpdate;
+            var memberToUpdate = dbContext.RoomMembers
+                .FirstOrDefault(m => m.RoomId == userProgrammeUpdate.RoomId && m.UserId == roomMemberUpdate.UserId);
+
+            if (memberToUpdate == null)
+            {
+                return false;
+            }
+
+            memberToUpdate.ProgrammeTimeSecs = userProgrammeUpdate.ProgrammeTimeSecs;
+            memberToUpdate.LastUpdated = userProgrammeUpdate.LastUpdated;
+            memberToUpdate.PlayStatus = userProgrammeUpdate.PlayStatus;
+            memberToUpdate.InBreak = userProgrammeUpdate.InBreak;
+            memberToUpdate.BreakTimeSecs = userProgrammeUpdate.BreakTimeSecs;
+
+            return dbContext.SaveChanges() > 0;
         }
 
         // ToDo: Put Limit on and log error

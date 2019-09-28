@@ -4,20 +4,42 @@
 @section Styles {@Styles.Render("~/Content/room")}
 @section Scripts {
     <script src="~/Scripts/Libraries/jquery.signalR-2.2.2.js"></script>
+    <script src="~/Scripts/Libraries/moment.js"></script>
     <script src="~/SignalR/hubs"></script>
-    <script>var room = @Html.Raw(Model.JsonRoom)</script>
+    <script>var roomData = @Html.Raw(Model.JsonRoom)</script>
     <script src="~/SignalR/Scripts/room.js"></script>
 }
 <h1>@Model.Room.Name</h1>
-<h3>Owner: @Model.Room.Owner.Username</h3>
-<h3>Programme Name: @Model.Room.ProgrammeName</h3>
-<h3>Programme Runtime: @Model.Room.Runtime</h3>
-<h3>Programme Start Time: @Model.Room.ProgrammeStartTime</h3>
-<h3>Invite Code: @Model.Room.InviteCode</h3>
-<h4>Users</h4>
+<div id="room-info-container">
+    <div>Owner: @Model.Room.Owner.Username</div>
+    <div>Name: @Model.Room.ProgrammeName</div>
+    <div>Runtime: @Model.Room.Runtime.ToMinsAndSecsText()</div>
+    <div>Start Time: @Model.Room.ProgrammeStartTime</div>
+    <div>Invite Code: @Model.Room.InviteCode</div>
+</div>
+<h3>Controls</h3>
+<div id="controls-container">
+    <div>Playtime: <time id="programme-time" datetime="00:00:00"></time></div>
+    <div id="programme-controls-container">
+        <button id="play-button" class="media-control">&#9654;</button>
+        <button id="pause-button" class="media-control">&#9208;</button>
+        <input class="time-input" type="number" id="time-hours" name="time-hours" min="0" max="@Model.Room.Runtime.Hours" placeholder="hh" />
+        <span class="colon">:</span>
+        <input class="time-input" type="number" id="time-mins" name="time-mins" min="0" max="@Model.Room.Runtime.Minutes" placeholder="mm" />
+        <span class="colon">:</span>
+        <input class="time-input" type="number" id="time-secs" name="time-secs" min="0" max="60" placeholder="ss" />
+        <button id="update-time-button">Update</button>
+    </div>
+    <div>Breaktime: <time id="break-time" datetime="00:00:00"></time></div>
+    <div id="break-controls-container">
+        <button id="break-button" class="media-control"></button>
+        <div id="break-time-container">
+            <input class="time-input" type="number" id="break-time-mins" name="break-time-mins" min="0" max="60" placeholder="mm" />
+            <span class="colon">:</span>
+            <input class="time-input" type="number" id="break-time-secs" name="break-time-secs" min="0" max="60" placeholder="ss" />
+        </div>
+    </div>
+</div>
+<h3>Watchers</h3>
 <div class="userList">
-    @foreach (var member in Model.Room.Members)
-    {
-        <p>@member.Username</p>
-    }
 </div>

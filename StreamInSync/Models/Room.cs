@@ -20,6 +20,7 @@
 
         public User Owner { get; set; }
 
+        //ToDo: Remove if these populated by signal R and not needed
         public ICollection<RoomMember> Members { get; set; }
 
         public string ProgrammeName { get; set; }

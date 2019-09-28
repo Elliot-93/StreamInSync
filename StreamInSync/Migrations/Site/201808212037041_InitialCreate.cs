@@ -16,10 +16,11 @@ namespace StreamInSync.Migrations.Site
                         Username = c.String(),
                         Role = c.Int(nullable: false),
                         ConnectionId = c.String(),
-                        ProgrammeTime = c.Time(nullable: false, precision: 7),
+                        ProgrammeTimeSecs = c.Int(nullable: false),
                         LastUpdated = c.DateTime(nullable: false),
+                        PlayStatus = c.Int(nullable: false),
                         InBreak = c.Boolean(nullable: false),
-                        BreakTime = c.Time(precision: 7),
+                        BreakTimeSecs = c.Int(),
                     })
                 .PrimaryKey(t => new { t.RoomId, t.UserId })
                 .ForeignKey("dbo.Rooms", t => t.RoomId, cascadeDelete: true)

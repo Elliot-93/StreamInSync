@@ -1,6 +1,6 @@
 ﻿using StreamInSync.Models;
-using StreamInSync.Respository;
-using StreamInSync.Respository.Interfaces;
+using StreamInSync.Repository;
+using StreamInSync.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
 
@@ -45,6 +45,11 @@ namespace StreamInSync.Services
         public int? RemoveUser(int userId, string connectionId)
         {
             return roomRepository.RemoveUser(userId, connectionId);
+        }
+
+        public bool UpdateRoomMember(RoomMemberUpdate roomMemberUpdate)
+        {
+            return roomRepository.UpdateRoomMember(roomMemberUpdate);
         }
     }
 }

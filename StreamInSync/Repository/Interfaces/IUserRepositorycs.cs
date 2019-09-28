@@ -1,6 +1,6 @@
 ﻿using StreamInSync.Models;
 
-namespace StreamInSync.Respository.Interfaces
+namespace StreamInSync.Repository.Interfaces
 {
     interface IUserRepository
     {

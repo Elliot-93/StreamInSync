@@ -1,8 +1,8 @@
-﻿namespace StreamInSync.Respository
+﻿namespace StreamInSync.Repository
 {
     using StreamInSync.Data;
     using StreamInSync.Models;
-    using StreamInSync.Respository.Interfaces;
+    using StreamInSync.Repository.Interfaces;
     using System.Linq;
 
     public class UserRepository : IUserRepository

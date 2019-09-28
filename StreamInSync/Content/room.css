@@ -1,3 +1,47 @@
-﻿.room-info {
-    font-size: 12px;    
+﻿#room-info-container {
+    font-size: 1em;
+    color: darkslategrey;
+    margin: 0 0 10px 0;
+}
+
+#controls-container {
+    margin: 0 0 10px 0;
+}
+
+#break-button {
+    background: url("break-icon-small.jpg");
+    background-position: center;
+    margin: 0 5px 0 0; 
+}
+
+.media-control {
+    height: 40px;
+    width: 40px;
+    margin: 0 5px 0 0;
+}
+
+#update-time-button {
+    margin: 0 0 0 5px;
+}
+
+.time-input {
+    height: 40px;
+    width: 40px;
+    margin: 0 2px 0 2px 0;
+}
+
+#programme-controls-container,
+#break-controls-container,
+#break-time-container {
+    display: flex;
+    flex-direction: row;
+}
+
+#programme-controls-container,
+#break-controls-container {
+    margin: 0 0 10px 0;
+}
+
+.colon {
+    line-height: 30px;
 }

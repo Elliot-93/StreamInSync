@@ -1,6 +1,6 @@
 ﻿using StreamInSync.Models;
-using StreamInSync.Respository;
-using StreamInSync.Respository.Interfaces;
+using StreamInSync.Repository;
+using StreamInSync.Repository.Interfaces;
 using System.Collections.Generic;
 
 namespace StreamInSync.Services
