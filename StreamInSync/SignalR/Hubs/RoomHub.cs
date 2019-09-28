@@ -37,7 +37,7 @@
         }
 
         //todo: Handle errors, return error message to user and log
-        public void UpdateRoomMember(ProgrammeTimeUpdate programmeTimeUpdate)
+        public void UpdateServerProgrammeTime(ProgrammeTimeUpdate programmeTimeUpdate)
         {
             var userId = GetUserId();
 
@@ -112,7 +112,8 @@
                         m.LastUpdated,
                         m.ProgrammeTimeSecs,
                         m.InBreak,
-                        BreakTime = m.BreakTimeSecs ?? 0
+                        BreakTime = m.BreakTimeSecs ?? 0,
+                        m.PlayStatus
                     }).ToArray();
         }
 

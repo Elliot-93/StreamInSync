@@ -1,34 +1,56 @@
-﻿const PlayStatus = {
+﻿'use strict';
+
+const PlayStatus = {
     NotStarted: 0,
     Playing: 1,
     Paused: 2,
     Finished: 3
 }
 
+var roomMemberTimers = [];
+
 var roomHub = $.connection.roomHub;
 $.connection.hub.logging = true; //todo: take this out when deployed
-$.connection.hub.start().done(function () {
-    roomHub.server.joinRoom({ RoomId: roomData.RoomId, LastUpdated: new Date().getTime() });
-});
+$.connection.hub.start()
+    .done(function () {
+        roomHub.server.joinRoom({ RoomId: roomData.RoomId, LastUpdated: new Date().getTime() });
+    }).fail(function (error) {
+        console.log('Failed to start hub: ' + error);
+    });
 
 roomHub.client.updateRoomUsers = function (roomUsers) {
     $(".userList").empty();
-    var membersExceptCurrentUser = roomUsers.filter(function (value, index, arr) {
-        return value.UserId !== roomData.UserId;
-    });
+    // removes intervals so old timers can be garbage collected when array reset
+    for (var member of roomMemberTimers) {
+        clearInterval(member.interval);
+    }
 
-    var roomMemberCount = membersExceptCurrentUser.length;
+    let roomMembers = roomUsers.filter(function (value, index, arr) {
+        return value.UserId !== roomData.UserId;
+    }).sort((a, b) => { return a.UserId - b.UserId });
+
+    let roomMemberCount = roomMembers.length;
     roomMemberTimers = [roomMemberCount];
     
     for (var i = 0; i < roomMemberCount; i++) {
-        var member = membersExceptCurrentUser[i];
-        $(".userList").append(`<p>${member.Username}  <time id="room-member-timer-${i}"></time>  ${member.InBreak}</p>`);
-        roomMemberTimers[i] = roomMemberTimer.init($(`#room-member-timer-${i}`), member.ProgrammeTimeSecs, member.PlayStatus);
+        let member = roomMembers[i];
+        $(".userList").append(`<p>${member.Username}  <time id="room-member-timer-${member.UserId}"></time>  ${member.InBreak}</p>`);
+
+        let inferredProgrammeTime;
+        if (member.playStatus === PlayStatus.Playing) {
+            var secondsSinceUpdated = moment.utc().diff(moment.utc(member.LastUpdated), 'seconds');
+            inferredProgrammeTime = member.ProgrammeTimeSecs + secondsSinceUpdated;
+        }
+        else {
+            inferredProgrammeTime = member.ProgrammeTimeSecs;
+        }
+
+        roomMemberTimers[i] = new RoomMemberTimer(member.UserId, inferredProgrammeTime , member.PlayStatus);
     }
 };
 
-var updateRoomMembers = function (seconds, playStatus, InBreak) {
-    roomHub.server.updateRoomMember({
+var updateServerProgrammeTime = function (seconds, playStatus, InBreak) {
+    roomHub.server.updateServerProgrammeTime({
         RoomId: roomData.RoomId,
         ProgrammeTimeSecs: seconds,
         LastUpdated: moment.utc().format(),
@@ -41,49 +63,48 @@ var updateRoomMembers = function (seconds, playStatus, InBreak) {
         console.log('Invocation of updateRoomMember failed. Error: ' + error);
     });
 };
+    
+class RoomMemberTimer {
+    constructor(memberId, seconds, playStatus) {
+        this.memberId = memberId;
+        this.seconds = seconds;
+        this.interval = null;
+        this.id = timerId;
 
-var roomMemberTimer = (function () {
+        timerId++;
 
-    var seconds,
-        interval,
-        timeElement;
-
-    function init(initTimeElement, initSeconds, playStatus) {
-        timeElement = initTimeElement;
-        seconds = initSeconds;
         if (playStatus === PlayStatus.Playing) {
-            play();
+            this.play();
         }
-        render();
+        else {
+            this.pause();
+        }
+        this.render();
     }
 
-    function play() {
-        if (!interval) {
-            interval = setInterval(function () {
-                seconds += 1;
-                render();
-            },
-            1000);
-        }
-    }
-
-    function pause() {
-        if (interval) {
-            clearInterval(interval);
-            interval = null;
+    play() {
+        if (!this.interval) {
+            this.interval = setInterval(() => this.update(), 1000);
         }
     }
 
-    function render() {
-        timeElement.html(moment().set({ h: 0, m: 0, s: 0 }).seconds(seconds).format('H:mm:ss'));
+    update() {
+        this.seconds += 1;
+        this.render();
     }
 
-    return {
-        init: init
+    pause() {
+        if (this.interval) {
+            clearInterval(this.interval);
+            this.interval = null;
+        }
     }
-})();
-//var roomMemberTimer 
-//$("#programme-time").html(moment().set({ h: 0, m: 0, s: 0 }).seconds(seconds).format('H:mm:ss'));
+
+    render() {
+        $(`#room-member-timer-${this.memberId}`).html(moment().set({ h: 0, m: 0, s: 0 }).seconds(this.seconds).format('H:mm:ss'));
+    }
+};
+
 
 var ProgrammeTimer = (function () {
 
@@ -91,14 +112,14 @@ var ProgrammeTimer = (function () {
         interval,
         timeElement;
 
-    function init(initTimeElement, initSeconds, playCallback, pauseCallback, updateTimeCallback) {
+    function init(initTimeElement, initSeconds, updateCallback) {
         $("#play-button").click(function () {
             play();
-            playCallback(seconds, PlayStatus.Playing);
+            updateCallback(seconds, PlayStatus.Playing);
         });
         $("#pause-button").click(function () {
             pause();
-            pauseCallback(seconds, PlayStatus.Paused);
+            updateCallback(seconds, PlayStatus.Paused);
         });
         $("#update-time-button").click(function () {
             var hours = $("#time-hours")[0].valueAsNumber || 0
@@ -108,7 +129,7 @@ var ProgrammeTimer = (function () {
             seconds = (hours * 60 * 60) + (mins * 60) + secs;
             render();
             pause();
-            updateTimeCallback(seconds, PlayStatus.Paused);
+            updateCallback(seconds, PlayStatus.Paused);
         });
 
         timeElement = initTimeElement;
@@ -144,5 +165,5 @@ var ProgrammeTimer = (function () {
 })();
 
 window.onload = function () {
-    ProgrammeTimer.init($("#programme-time"), 0, updateRoomMembers, updateRoomMembers, updateRoomMembers);
+    ProgrammeTimer.init($("#programme-time"), 0, updateServerProgrammeTime);
 };
