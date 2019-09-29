@@ -10,8 +10,10 @@ namespace StreamInSync
         public void Configuration(IAppBuilder app)
         {
             // todo: remove in prod
-            var hubConfiguration = new HubConfiguration();
-            hubConfiguration.EnableDetailedErrors = true;
+            var hubConfiguration = new HubConfiguration
+            {
+                EnableDetailedErrors = true
+            };
             app.MapSignalR(hubConfiguration);
         }
     }

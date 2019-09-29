@@ -105,6 +105,21 @@
             return memberToRemove.RoomId;
         }
 
+        public int? DisconnectUser(int userId, string connectionId)
+        {
+            var memberToDisconnect = dbContext.RoomMembers
+                .FirstOrDefault(m => m.ConnectionId == connectionId && m.UserId == userId);
+
+            if (memberToDisconnect == null)
+            {
+                return null;
+            }
+
+            memberToDisconnect.ConnectionId = null;
+            dbContext.SaveChanges();
+            return memberToDisconnect.RoomId;
+        }
+
         public bool UpdateRoomMember(RoomMemberUpdate roomMemberUpdate)
         {
             var userProgrammeUpdate = roomMemberUpdate.ProgrammeTimeUpdate;

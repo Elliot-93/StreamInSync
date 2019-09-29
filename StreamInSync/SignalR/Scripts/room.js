@@ -1,27 +1,14 @@
 ﻿'use strict';
 
-const PlayStatus = {
-    NotStarted: 0,
-    Playing: 1,
-    Paused: 2,
-    Finished: 3
-}
+let roomMemberTimers = [];
 
-var roomMemberTimers = [];
-
-var roomHub = $.connection.roomHub;
+let roomHub = $.connection.roomHub;
 $.connection.hub.logging = true; //todo: take this out when deployed
-$.connection.hub.start()
-    .done(function () {
-        roomHub.server.joinRoom({ RoomId: roomData.RoomId, LastUpdated: new Date().getTime() });
-    }).fail(function (error) {
-        console.log('Failed to start hub: ' + error);
-    });
 
 roomHub.client.updateRoomUsers = function (roomUsers) {
     $(".userList").empty();
     // removes intervals so old timers can be garbage collected when array reset
-    for (var member of roomMemberTimers) {
+    for (let member of roomMemberTimers) {
         clearInterval(member.interval);
     }
 
@@ -31,25 +18,25 @@ roomHub.client.updateRoomUsers = function (roomUsers) {
 
     let roomMemberCount = roomMembers.length;
     roomMemberTimers = [roomMemberCount];
-    
-    for (var i = 0; i < roomMemberCount; i++) {
+
+    for (let i = 0; i < roomMemberCount; i++) {
         let member = roomMembers[i];
-        $(".userList").append(`<p>${member.Username}  <time id="room-member-timer-${member.UserId}"></time>  ${member.InBreak}</p>`);
+        $(".userList").append(`<p>${member.Username}  Running Time: <time id="room-member-timer-${member.UserId}"></time>  ${PlayStatusText(member.PlayStatus, member.InBreak)}</p>`);
 
-        let inferredProgrammeTime;
-        if (member.playStatus === PlayStatus.Playing) {
-            var secondsSinceUpdated = moment.utc().diff(moment.utc(member.LastUpdated), 'seconds');
-            inferredProgrammeTime = member.ProgrammeTimeSecs + secondsSinceUpdated;
-        }
-        else {
-            inferredProgrammeTime = member.ProgrammeTimeSecs;
-        }
+        let calculatedProgrammeTime = CurrentProgrammeTime(member.ProgrammeTimeSecs, member.LastUpdated, member.PlayStatus);
 
-        roomMemberTimers[i] = new RoomMemberTimer(member.UserId, inferredProgrammeTime , member.PlayStatus);
+        roomMemberTimers[i] = new RoomMemberTimer(member.UserId, calculatedProgrammeTime, roomData.TotalRuntimeSeconds, member.PlayStatus);
     }
 };
 
-var updateServerProgrammeTime = function (seconds, playStatus, InBreak) {
+$.connection.hub.start()
+    .done(function () {
+        roomHub.server.joinRoom({ RoomId: roomData.RoomId, LastUpdated: new Date().getTime() });
+    }).fail(function (error) {
+        console.log('Failed to start hub: ' + error);
+    });
+
+let updateServerProgrammeTime = function (seconds, playStatus) {
     roomHub.server.updateServerProgrammeTime({
         RoomId: roomData.RoomId,
         ProgrammeTimeSecs: seconds,
@@ -65,13 +52,11 @@ var updateServerProgrammeTime = function (seconds, playStatus, InBreak) {
 };
     
 class RoomMemberTimer {
-    constructor(memberId, seconds, playStatus) {
+    constructor(memberId, seconds, maxSeconds, playStatus) {
         this.memberId = memberId;
         this.seconds = seconds;
-        this.interval = null;
-        this.id = timerId;
-
-        timerId++;
+        this.maxSeconds = maxSeconds;
+        this.interval = null;   
 
         if (playStatus === PlayStatus.Playing) {
             this.play();
@@ -88,16 +73,22 @@ class RoomMemberTimer {
         }
     }
 
-    update() {
-        this.seconds += 1;
-        this.render();
-    }
-
     pause() {
         if (this.interval) {
             clearInterval(this.interval);
             this.interval = null;
         }
+    }
+
+    update() {
+        if (this.seconds >= this.maxSeconds) {
+            this.seconds = this.maxSeconds;
+            this.pause();
+        }
+        else {
+            this.seconds += 1;
+        }
+        this.render();
     }
 
     render() {
@@ -106,13 +97,20 @@ class RoomMemberTimer {
 };
 
 
-var ProgrammeTimer = (function () {
+let ProgrammeTimer = (function () {
 
-    var seconds,
+    let seconds,
+        maxSeconds,
         interval,
-        timeElement;
+        timeElement,
+        updateCallback;
 
-    function init(initTimeElement, initSeconds, updateCallback) {
+    function init(initTimeElement, initSeconds, initMaxSeconds, playStatus, initupdateCallback) {
+        timeElement = initTimeElement;
+        seconds = initSeconds;
+        maxSeconds = initMaxSeconds;
+        updateCallback = initupdateCallback;
+
         $("#play-button").click(function () {
             play();
             updateCallback(seconds, PlayStatus.Playing);
@@ -122,9 +120,9 @@ var ProgrammeTimer = (function () {
             updateCallback(seconds, PlayStatus.Paused);
         });
         $("#update-time-button").click(function () {
-            var hours = $("#time-hours")[0].valueAsNumber || 0
-            var mins = $("#time-mins")[0].valueAsNumber || 0
-            var secs = $("#time-secs")[0].valueAsNumber || 0
+            let hours = $("#time-hours")[0].valueAsNumber || 0
+            let mins = $("#time-mins")[0].valueAsNumber || 0
+            let secs = $("#time-secs")[0].valueAsNumber || 0
 
             seconds = (hours * 60 * 60) + (mins * 60) + secs;
             render();
@@ -132,8 +130,12 @@ var ProgrammeTimer = (function () {
             updateCallback(seconds, PlayStatus.Paused);
         });
 
-        timeElement = initTimeElement;
-        seconds = initSeconds;
+        if (playStatus === PlayStatus.Playing) {
+            play();
+        }
+        else {
+            pause();
+        }
         render();
     }
 
@@ -151,7 +153,14 @@ var ProgrammeTimer = (function () {
     }
 
     function update() {
-        seconds += 1;
+        if (seconds >= maxSeconds) {
+            seconds = maxSeconds;
+            pause();
+            updateCallback(seconds, PlayStatus.Finished);
+        }
+        else {
+            seconds += 1;
+        }
         render();
     }
 
@@ -164,6 +173,42 @@ var ProgrammeTimer = (function () {
     }
 })();
 
+const PlayStatus = {
+    NotStarted: 0,
+    Playing: 1,
+    Paused: 2,
+    Finished: 3
+}
+
+function PlayStatusText(playStatus, inBreak) {
+    let breakText = inBreak ? " Adverts" : "";
+
+    switch (playStatus) {
+        case PlayStatus.NotStarted:
+            return "Not Started";
+        case PlayStatus.Playing:
+            return "Playing" + breakText;
+        case PlayStatus.Paused:
+            return "Paused" + breakText;
+        case PlayStatus.Finished:
+            return "Finished Watching"
+        default:
+            return "";
+    }
+}
+
+function CurrentProgrammeTime(lastRecordedTimeSecs, lastUpdatedTime, playStatus) {
+    let calculatedTime = 0;
+    if (playStatus === PlayStatus.Playing) {
+        let secondsSinceUpdated = moment.utc().diff(moment.utc(lastUpdatedTime), 'seconds');
+        calculatedTime = lastRecordedTimeSecs + secondsSinceUpdated;
+    }
+    else {
+        calculatedTime = lastRecordedTimeSecs;
+    }
+    return calculatedTime;
+}
+
 window.onload = function () {
-    ProgrammeTimer.init($("#programme-time"), 0, updateServerProgrammeTime);
+    ProgrammeTimer.init($("#programme-time"), CurrentProgrammeTime(roomData.ProgrammeTimeSecs, roomData.LastUpdatedTime, roomData.PlayStatus), roomData.TotalRuntimeSeconds, roomData.PlayStatus, updateServerProgrammeTime);
 };

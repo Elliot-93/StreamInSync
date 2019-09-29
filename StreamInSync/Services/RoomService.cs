@@ -47,6 +47,11 @@ namespace StreamInSync.Services
             return roomRepository.RemoveUser(userId, connectionId);
         }
 
+        public int? DisconnectUser(int userId, string connectionId)
+        {
+            return roomRepository.DisconnectUser(userId, connectionId);
+        }
+
         public bool UpdateRoomMember(RoomMemberUpdate roomMemberUpdate)
         {
             return roomRepository.UpdateRoomMember(roomMemberUpdate);

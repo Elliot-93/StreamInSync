@@ -8,6 +8,7 @@
     using Newtonsoft.Json;
     using System;
     using StreamInSync.Models;
+    using StreamInSync.Enums;
 
     public class RoomHub : Hub
     {
@@ -54,6 +55,7 @@
             }
         }
 
+        //todo: add button to leave room
         public void LeaveRoom(int roomId)
         {
             var userId = GetUserId();
@@ -79,7 +81,7 @@
                 return base.OnDisconnected(stopCalled);
             }
 
-            var roomId = roomService.RemoveUser(userId.Value, Context.ConnectionId);
+            var roomId = roomService.DisconnectUser(userId.Value, Context.ConnectionId);
 
             if (roomId != null)
             {
@@ -104,7 +106,11 @@
 
         private object GetSerializableRoomMembers(int roomId)
         {
-            return roomService.Get(roomId).Members.Select(m =>
+            return roomService.Get(roomId).Members
+                .Where(m => 
+                    !string.IsNullOrEmpty(m.ConnectionId) 
+                    || (m.PlayStatus != PlayStatus.NotStarted  && (DateTime.UtcNow - m.LastUpdated).TotalMinutes < 15 ))
+                .Select(m =>
                     new
                     {
                         m.UserId,

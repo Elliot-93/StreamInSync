@@ -3,6 +3,7 @@ using StreamInSync.Contexts;
 using StreamInSync.Models;
 using StreamInSync.Services;
 using System.Web.Mvc;
+using System.Linq;
 
 namespace StreamInSync.Controllers
 {
@@ -23,10 +24,20 @@ namespace StreamInSync.Controllers
             //todo: get room if public fine. If private check on auth token - authenticatedPrivateRoomIds
 
             var room = roomService.Get(roomId);
+            var userId = sessionContext.GetUser().UserId;
+            var existingUserRoomData = room.Members.FirstOrDefault(m => m.UserId == userId);
 
             if (room != null)
             {
-                var roomJson = new { room.RoomId, sessionContext.GetUser().UserId };
+                var roomJson = new
+                {
+                    room.RoomId,
+                    UserId = userId,
+                    TotalRuntimeSeconds = room.Runtime.TotalSeconds,
+                    ProgrammeTimeSecs = existingUserRoomData?.ProgrammeTimeSecs ?? 0,
+                    existingUserRoomData.PlayStatus,
+                    LastUpdatedTime = existingUserRoomData.LastUpdated
+                };
 
                 return View(new RoomVM(room, JsonConvert.SerializeObject(roomJson)));
             }
