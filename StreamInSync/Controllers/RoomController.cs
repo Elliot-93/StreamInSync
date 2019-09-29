@@ -36,7 +36,9 @@ namespace StreamInSync.Controllers
                     TotalRuntimeSeconds = room.Runtime.TotalSeconds,
                     ProgrammeTimeSecs = existingUserRoomData?.ProgrammeTimeSecs ?? 0,
                     existingUserRoomData.PlayStatus,
-                    LastUpdatedTime = existingUserRoomData.LastUpdated
+                    LastUpdatedTime = existingUserRoomData.LastUpdated,
+                    existingUserRoomData.InBreak,
+                    existingUserRoomData.BreakTimeSecs
                 };
 
                 return View(new RoomVM(room, JsonConvert.SerializeObject(roomJson)));

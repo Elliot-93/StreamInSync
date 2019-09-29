@@ -32,6 +32,9 @@ namespace StreamInSync
 
             bundles.Add(new StyleBundle("~/Content/room").Include(
                      "~/Content/room.css"));
+
+            bundles.Add(new StyleBundle("~/css/home").Include(
+                "~/Content/home.css"));
         }
     }
 }

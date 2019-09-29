@@ -32,12 +32,14 @@
     </div>
     <div>Breaktime: <time id="break-time" datetime="00:00:00"></time></div>
     <div id="break-controls-container">
-        <button id="break-button" class="media-control"></button>
+        <button id="break-play-button" class="media-control">&#9654;</button>
+        <button id="break-pause-button" class="media-control">&#9208;</button>
         <div id="break-time-container">
             <input class="time-input" type="number" id="break-time-mins" name="break-time-mins" min="0" max="60" placeholder="mm" />
             <span class="colon">:</span>
             <input class="time-input" type="number" id="break-time-secs" name="break-time-secs" min="0" max="60" placeholder="ss" />
         </div>
+        <button id="break-button" class="media-control"></button>
     </div>
 </div>
 <h3>Watchers</h3>
