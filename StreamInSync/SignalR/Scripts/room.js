@@ -1,6 +1,7 @@
 ﻿'use strict';
 
-let roomMemberTimers = [];
+let roomMemberProgrammeTimers = [];
+let roomMemberBreakTimers = [];
 
 let roomHub = $.connection.roomHub;
 $.connection.hub.logging = true; //todo: take this out when deployed
@@ -8,8 +9,11 @@ $.connection.hub.logging = true; //todo: take this out when deployed
 roomHub.client.updateRoomUsers = function (roomUsers) {
     $(".userList").empty();
     // removes intervals so old timers can be garbage collected when array reset
-    for (let member of roomMemberTimers) {
-        clearInterval(member.interval);
+    for (let timer of roomMemberProgrammeTimers) {
+        clearInterval(timer.interval);
+    }
+    for (let timer of roomMemberBreakTimers) {
+        clearInterval(timer.interval);
     }
 
     let roomMembers = roomUsers.filter(function (value, index, arr) {
@@ -17,15 +21,27 @@ roomHub.client.updateRoomUsers = function (roomUsers) {
     }).sort((a, b) => { return a.UserId - b.UserId });
 
     let roomMemberCount = roomMembers.length;
-    roomMemberTimers = [roomMemberCount];
+    roomMemberProgrammeTimers = [roomMemberCount];
 
     for (let i = 0; i < roomMemberCount; i++) {
         let member = roomMembers[i];
-        $(".userList").append(`<p>${member.Username}  Running Time: <time id="room-member-timer-${member.UserId}"></time>  ${PlayStatusText(member.PlayStatus, member.InBreak)}</p>`);
+
+        let breakText = "";
+        if (member.InBreak) {
+            breakText = `<time id="room-member-break-timer-${member.UserId}"></time>`;
+
+            if (member.BreakTimeSecs > 0) {
+                let breakTimeSeconds = CurrentProgrammeTime(-roomData.BreakTimeSecs, roomData.LastUpdatedTime, roomData.PlayStatus);
+                roomMemberBreakTimers[i] = new RoomMemberBreakTimer(member.UserId, member.BreakTimeSecs, member.PlayStatus);
+            }
+        }
+        $(".userList").append(`<p>${member.Username} - ${PlayStatusText(member.PlayStatus, member.InBreak)} ${breakText}<br>
+                               Running Time: <time id="room-member-timer-${member.UserId}"></time> </p>`);
 
         let calculatedProgrammeTime = CurrentProgrammeTime(member.ProgrammeTimeSecs, member.LastUpdated, member.PlayStatus);
 
-        roomMemberTimers[i] = new RoomMemberTimer(member.UserId, calculatedProgrammeTime, roomData.TotalRuntimeSeconds, member.PlayStatus);
+        let programmePlayStatus = member.InBreak ? PlayStatus.Paused : member.PlayStatus;
+        roomMemberProgrammeTimers[i] = new RoomMemberProgrammeTimer(member.UserId, calculatedProgrammeTime, roomData.TotalRuntimeSeconds, programmePlayStatus);
     }
 };
 
@@ -51,7 +67,7 @@ let updateServerProgrammeTime = function (playStatus) {
     });
 };
     
-class RoomMemberTimer {
+class RoomMemberProgrammeTimer {
     constructor(memberId, seconds, maxSeconds, playStatus) {
         this.memberId = memberId;
         this.seconds = seconds;
@@ -93,6 +109,50 @@ class RoomMemberTimer {
 
     render() {
         $(`#room-member-timer-${this.memberId}`).html(moment().set({ h: 0, m: 0, s: 0 }).seconds(this.seconds).format('H:mm:ss'));
+    }
+};
+
+class RoomMemberBreakTimer {
+    constructor(memberId, seconds, playStatus) {
+        this.memberId = memberId;
+        this.seconds = seconds;
+        this.interval = null;
+
+        if (playStatus === PlayStatus.Playing) {
+            this.play();
+        }
+        else {
+            this.pause();
+        }
+        this.render();
+    }
+
+    play() {
+        if (!this.interval) {
+            this.interval = setInterval(() => this.update(), 1000);
+        }
+    }
+
+    pause() {
+        if (this.interval) {
+            clearInterval(this.interval);
+            this.interval = null;
+        }
+    }
+
+    update() {
+        if (this.seconds <= 0) {
+            this.seconds = 0;
+            this.pause();
+        }
+        else {
+            this.seconds -= 1;
+        }
+        this.render();
+    }
+
+    render() {
+        $(`#room-member-break-timer-${this.memberId}`).html(moment().set({ h: 0, m: 0, s: 0 }).seconds(this.seconds).format('H:mm:ss'));
     }
 };
 

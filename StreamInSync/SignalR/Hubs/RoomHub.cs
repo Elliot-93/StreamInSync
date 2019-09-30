@@ -118,7 +118,7 @@
                         m.LastUpdated,
                         m.ProgrammeTimeSecs,
                         m.InBreak,
-                        BreakTime = m.BreakTimeSecs ?? 0,
+                        BreakTimeSecs = m.BreakTimeSecs ?? 0,
                         m.PlayStatus
                     }).ToArray();
         }
