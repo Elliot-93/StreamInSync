@@ -4,6 +4,9 @@ using StreamInSync.Models;
 using StreamInSync.Services;
 using System.Web.Mvc;
 using System.Linq;
+using StreamInSync.Provider;
+using StreamInSync.Enums;
+using System;
 
 namespace StreamInSync.Controllers
 {
@@ -12,11 +15,13 @@ namespace StreamInSync.Controllers
     {
         private readonly ISessionContext sessionContext;
         private readonly IRoomService roomService;
+        private readonly IRoomSummaryVmProvider roomSummaryVmProvider;
 
         public RoomController()
         {
             sessionContext = new SessionContext();
             roomService = new RoomService();
+            roomSummaryVmProvider = new RoomSummaryVmProvider();
         }
 
         public ActionResult Index(int roomId)
@@ -24,21 +29,21 @@ namespace StreamInSync.Controllers
             //todo: get room if public fine. If private check on auth token - authenticatedPrivateRoomIds
 
             var room = roomService.Get(roomId);
-            var userId = sessionContext.GetUser().UserId;
-            var existingUserRoomData = room.Members.FirstOrDefault(m => m.UserId == userId);
 
             if (room != null)
             {
+                var userId = sessionContext.GetUser().UserId;
+                var existingUserRoomData = room.Members.FirstOrDefault(m => m.UserId == userId);
                 var roomJson = new
                 {
                     room.RoomId,
                     UserId = userId,
                     TotalRuntimeSeconds = room.Runtime.TotalSeconds,
                     ProgrammeTimeSecs = existingUserRoomData?.ProgrammeTimeSecs ?? 0,
-                    existingUserRoomData.PlayStatus,
-                    LastUpdatedTime = existingUserRoomData.LastUpdated,
-                    existingUserRoomData.InBreak,
-                    existingUserRoomData.BreakTimeSecs
+                    PlayStatus = existingUserRoomData?.PlayStatus ?? PlayStatus.Paused,
+                    LastUpdatedTime = existingUserRoomData?.LastUpdated ?? DateTime.UtcNow,
+                    InBreak = existingUserRoomData?.InBreak ?? false,
+                    existingUserRoomData?.BreakTimeSecs
                 };
 
                 return View(new RoomVM(room, JsonConvert.SerializeObject(roomJson)));
@@ -90,6 +95,32 @@ namespace StreamInSync.Controllers
             }
 
             return View(joinRoom);
+        }
+
+        public ActionResult List()
+        {
+            var rooms = roomSummaryVmProvider.BuildRoomViewModels(roomService.GetAllPublicRooms());
+            
+            return View(rooms);
+        }
+
+        [HttpPost]
+        public ActionResult List(string queryParams)
+        {
+            var roomData = roomSummaryVmProvider
+                .BuildRoomViewModels(roomService.GetAllPublicRooms())
+                .Select(r =>
+                new
+                {
+                    r.Room.Name,
+                    r.Room.ProgrammeName,
+                    r.Room.ProgrammeStartTime,
+                    r.Room.Owner.Username,
+                    r.Link
+                });
+
+            //todo: serialise just values then dont need columns defined in .js
+            return Content(JsonConvert.SerializeObject(roomData));
         }
     }
 }

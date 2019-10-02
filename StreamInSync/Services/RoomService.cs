@@ -32,6 +32,11 @@ namespace StreamInSync.Services
             return roomRepository.Get(roomId);
         }
 
+        public IEnumerable<Room> GetAllPublicRooms()
+        {
+            return roomRepository.GetAllPublicRooms();
+        }
+
         public IEnumerable<Room> GetUsersRooms(int userId)
         {
             return roomRepository.GetUsersRooms(userId);

@@ -1,0 +1,25 @@
+﻿@{ Layout = "~/Views/Shared/_Layout.cshtml"; }
+@section Title {Room List}
+@model IEnumerable<StreamInSync.Models.RoomSummaryVM>
+
+<table id="room-table" class="responseive nowrap">
+    <thead>
+        <tr>
+            <th>Room Name</th>
+            <th>Programme</th>
+            <th>Start Time</th>
+            <th class="min-tablet-l">Owner</th>
+            <th class="min-tablet-l"></th>
+        </tr>
+    </thead>
+</table>
+
+@section Scripts {
+    <script src="~/Scripts/room-list.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+    <script src="~/Scripts/Libraries/moment.js"></script>
+}
+@section Styles{
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css">
+}

@@ -44,11 +44,44 @@ namespace StreamInSync.Data
                 {
                     RoomId = 2,
                     Name = "Show of the month",
-                    InviteCode = "4gg4y7ur",
+                    InviteCode = "4gs4y7ur",
                     Owner = dbContext.Users.Find(1),
                     Members = new List<RoomMember>(),
                     ProgrammeName = "Mr Robot",
                     Runtime = new TimeSpan(0, 40, 0),
+                    ProgrammeStartTime = DateTime.Now.AddDays(2)
+                },
+                new Room
+                {
+                    RoomId = 3,
+                    Name = "Netflix and chill",
+                    InviteCode = "2gg4y7ur",
+                    Owner = dbContext.Users.Find(1),
+                    Members = new List<RoomMember>(),
+                    ProgrammeName = "Veep",
+                    Runtime = new TimeSpan(0, 45, 0),
+                    ProgrammeStartTime = DateTime.Now.AddDays(2)
+                },
+                new Room
+                {
+                    RoomId = 4,
+                    Name = "Apprentice",
+                    InviteCode = "6gg4y7ur",
+                    Owner = dbContext.Users.Find(1),
+                    Members = new List<RoomMember>(),
+                    ProgrammeName = "Episode 5",
+                    Runtime = new TimeSpan(1, 0, 0),
+                    ProgrammeStartTime = DateTime.Now.AddDays(2)
+                },
+                new Room
+                {
+                    RoomId = 5,
+                    Name = "Office Maraton",
+                    InviteCode = "7gg4y7ur",
+                    Owner = dbContext.Users.Find(1),
+                    Members = new List<RoomMember>(),
+                    ProgrammeName = "The Office",
+                    Runtime = new TimeSpan(0, 30, 0),
                     ProgrammeStartTime = DateTime.Now.AddDays(2)
                 }
             };

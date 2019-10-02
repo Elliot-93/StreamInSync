@@ -5,20 +5,18 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    public class RoomSummaryProvider : IRoomSummaryProvider
+    public class RoomSummaryVmProvider : IRoomSummaryVmProvider
     {
         private readonly IRoomService roomService;
 
-        public RoomSummaryProvider()
+        public RoomSummaryVmProvider()
         {
             roomService = new RoomService();
         }
 
-        public IEnumerable<RoomSummaryVM> UsersRooms(int userId)
+        public IEnumerable<RoomSummaryVM> BuildRoomViewModels(IEnumerable<Room> rooms)
         {
-            return roomService
-                .GetUsersRooms(userId)
-                .Select(r => new RoomSummaryVM(r, BuildRoomLink(r)));
+            return rooms.Select(r => new RoomSummaryVM(r, BuildRoomLink(r)));
         }
 
         private string BuildRoomLink(Room room)

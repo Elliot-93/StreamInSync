@@ -56,6 +56,13 @@
                 .FirstOrDefault();
         }
 
+        public IEnumerable<Room> GetAllPublicRooms()
+        {
+            return dbContext.Rooms
+                .Include(r => r.Owner)
+                .Where(r => r.Password == null);
+        }
+
         public IEnumerable<Room> GetUsersRooms(int userId)
         {
             return dbContext.Rooms

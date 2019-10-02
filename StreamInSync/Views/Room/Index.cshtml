@@ -1,14 +1,6 @@
 ﻿@{ Layout = "~/Views/Shared/_Layout.cshtml"; }
 @model StreamInSync.Models.RoomVM
 @section Title {Create Room}
-@section Styles {@Styles.Render("~/Content/room")}
-@section Scripts {
-    <script src="~/Scripts/Libraries/jquery.signalR-2.2.2.js"></script>
-    <script src="~/Scripts/Libraries/moment.js"></script>
-    <script src="~/SignalR/hubs"></script>
-    <script>var roomData = @Html.Raw(Model.JsonRoom)</script>
-    <script src="~/SignalR/Scripts/room.js"></script>
-}
 <h1>@Model.Room.Name</h1>
 <div id="room-info-container">
     <div>Owner: @Model.Room.Owner.Username</div>
@@ -45,3 +37,11 @@
 <h3>Watchers</h3>
 <div class="userList">
 </div>
+@section Styles {@Styles.Render("~/Content/room")}
+@section Scripts {
+    <script src="~/Scripts/Libraries/jquery.signalR-2.2.2.js"></script>
+    <script src="~/Scripts/Libraries/moment.js"></script>
+    <script src="~/SignalR/hubs"></script>
+    <script>var roomData = @Html.Raw(Model.JsonRoom)</script>
+    <script src="~/SignalR/Scripts/room.js"></script>
+}
