@@ -1,10 +1,21 @@
 ﻿@model StreamInSync.Models.RoomSummaryVM
 @{Layout = null;}
 
-<a href="@Model.Link">
-    <div class="room-summary">
-        <h4>@Model.Room.Name</h4>
-        <h6 class="show-name">Next Show: @Model.Room.ProgrammeName</h6>
-        <h6 class="show-name">Start Time: @Model.Room.ProgrammeStartTime</h6>
+
+<div class="room-summary">
+    <a href="@Model.JoinRoomLink">
+    <div class="room-details-container">
+        <div class="room-name">@Model.Room.Name</div>
+        <div class="details">Next Show: @Model.Room.ProgrammeName</div>
+        <div class="details">Start Time: @Model.Room.ProgrammeStartTime</div>
     </div>
-</a>
+    </a>
+    <div class="button-container">
+        <button href="@("/room/edit/" + Model.Room.RoomId)">Edit</button>
+        <form action="@("/room/delete/" + Model.Room.RoomId)" method="post">
+            @Html.AntiForgeryToken()
+            <input type="submit" name="delete-room" value="Delete" />
+        </form>
+    </div>
+</div>
+

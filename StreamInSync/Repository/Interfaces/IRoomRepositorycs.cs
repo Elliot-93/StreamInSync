@@ -9,6 +9,7 @@ namespace StreamInSync.Repository.Interfaces
         Room Create(CreateRoomVM newRoom, User user);
         Room Get(string username, string password);
         Room Get(int roomId);
+        bool Delete(int roomId, int userId);
         IEnumerable<Room> GetAllPublicRooms();
         IEnumerable<Room> GetUsersRooms(int userId);
         void AddUser(int roomId, int userId, string connectionId, DateTime lastUpdated);

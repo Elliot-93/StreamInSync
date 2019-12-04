@@ -387,6 +387,25 @@ function CurrentProgrammeTime(lastRecordedTimeSecs, lastUpdatedTime, playStatus)
     return calculatedTime;
 }
 
+let RuntimeBar = (function () {
+    let runtimeSeconds,
+        progressBar;
+
+    function init(initRuntimeSeconds) {
+        runtimeSeconds = initRuntimeSeconds;
+        progressBar = $("#progess-bar");
+    }
+
+    function play() {
+        
+    }
+
+    return {
+        init: init,
+        play: play
+    }
+})();
+
 window.onload = function () {
     ProgrammeTimer.init(CurrentProgrammeTime(roomData.ProgrammeTimeSecs, roomData.LastUpdatedTime, roomData.PlayStatus), roomData.TotalRuntimeSeconds, roomData.PlayStatus, roomData.InBreak, updateServerProgrammeTime);
 

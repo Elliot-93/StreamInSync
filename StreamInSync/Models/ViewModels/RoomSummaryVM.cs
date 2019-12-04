@@ -2,14 +2,14 @@
 {
     public class RoomSummaryVM
     {
-        public RoomSummaryVM(Room room, string link)
+        public RoomSummaryVM(Room room, string joinRoomLink)
         {
             Room = room;
-            Link = link;
+            JoinRoomLink = joinRoomLink;
         }
 
         public Room Room { get; private set; }
 
-        public string Link { get; private set; }
+        public string JoinRoomLink { get; private set; }
     }
 }

@@ -11,6 +11,7 @@ using System;
 namespace StreamInSync.Controllers
 {
     [Authorize]
+    [RoutePrefix("room")]
     public class RoomController : Controller
     {
         private readonly ISessionContext sessionContext;
@@ -38,7 +39,7 @@ namespace StreamInSync.Controllers
                 {
                     room.RoomId,
                     UserId = userId,
-                    TotalRuntimeSeconds = room.Runtime.TotalSeconds,
+                    TotalRuntimeSeconds = room.Runtime.TotalSeconds,    
                     ProgrammeTimeSecs = existingUserRoomData?.ProgrammeTimeSecs ?? 0,
                     PlayStatus = existingUserRoomData?.PlayStatus ?? PlayStatus.Paused,
                     LastUpdatedTime = existingUserRoomData?.LastUpdated ?? DateTime.UtcNow,
@@ -97,6 +98,14 @@ namespace StreamInSync.Controllers
             return View(joinRoom);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("delete/{roomId:int}")]
+        public ActionResult Delete(int roomId)
+        {
+            return Content(roomService.Delete(roomId, sessionContext.GetUser().UserId).ToString());
+        }
+
         public ActionResult List()
         {
             var rooms = roomSummaryVmProvider.BuildRoomViewModels(roomService.GetAllPublicRooms());
@@ -104,6 +113,7 @@ namespace StreamInSync.Controllers
             return View(rooms);
         }
 
+        [OverrideAuthorization]
         [HttpPost]
         public ActionResult List(string queryParams)
         {
@@ -116,7 +126,7 @@ namespace StreamInSync.Controllers
                     r.Room.ProgrammeName,
                     r.Room.ProgrammeStartTime,
                     r.Room.Owner.Username,
-                    r.Link
+                    r.JoinRoomLink
                 });
 
             //todo: serialise just values then dont need columns defined in .js

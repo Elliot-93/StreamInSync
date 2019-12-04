@@ -3,3 +3,11 @@
     margin-bottom: 10px;
     background-color: lightgray;
 }
+
+.room-summary .room-name{
+    font-size: 1em;
+}
+
+.room-summary .details {
+    font-size: 0.8em;
+}

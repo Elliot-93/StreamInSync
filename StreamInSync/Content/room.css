@@ -45,3 +45,20 @@
 .colon {
     line-height: 30px;
 }
+
+#progress-bar-container {
+    display: inline-block;
+    width: 10px;
+    background-color: lightgray;
+    height: calc(100vh - 179px);
+    position: absolute;
+    margin-left: -16px;
+}
+
+#progress-bar {
+    background-color: #E00000;
+}
+
+#room-container {
+    display: inline-block;
+}

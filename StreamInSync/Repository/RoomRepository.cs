@@ -56,6 +56,22 @@
                 .FirstOrDefault();
         }
 
+        public bool Delete(int roomId, int userId)
+        {
+            var roomToDelete = dbContext.Rooms
+                .Include(r => r.Owner)
+                .FirstOrDefault(r => r.RoomId == roomId && r.Owner.UserId == userId);
+
+            if (roomToDelete == null)
+            {
+                return false;
+            }
+
+            dbContext.Rooms.Remove(roomToDelete);
+            dbContext.SaveChanges();
+            return true;
+        }
+
         public IEnumerable<Room> GetAllPublicRooms()
         {
             return dbContext.Rooms

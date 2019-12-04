@@ -32,6 +32,11 @@ namespace StreamInSync.Services
             return roomRepository.Get(roomId);
         }
 
+        public bool Delete(int roomId, int userId)
+        {
+            return roomRepository.Delete(roomId, userId);
+        }
+
         public IEnumerable<Room> GetAllPublicRooms()
         {
             return roomRepository.GetAllPublicRooms();
