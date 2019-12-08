@@ -18,7 +18,7 @@ roomHub.client.updateRoomUsers = function (roomUsers) {
 
     let roomMembers = roomUsers.filter(function (value, index, arr) {
         return value.UserId !== roomData.UserId;
-    }).sort((a, b) => { return a.UserId - b.UserId });
+    }).sort((a, b) => { return a.UserId - b.UserId; });
 
     let roomMemberCount = roomMembers.length;
     roomMemberProgrammeTimers = [roomMemberCount];
@@ -31,7 +31,6 @@ roomHub.client.updateRoomUsers = function (roomUsers) {
             breakText = `<time id="room-member-break-timer-${member.UserId}"></time>`;
 
             if (member.BreakTimeSecs > 0) {
-                let breakTimeSeconds = CurrentProgrammeTime(-roomData.BreakTimeSecs, roomData.LastUpdatedTime, roomData.PlayStatus);
                 roomMemberBreakTimers[i] = new RoomMemberBreakTimer(member.UserId, member.BreakTimeSecs, member.PlayStatus);
             }
         }
@@ -110,7 +109,7 @@ class RoomMemberProgrammeTimer {
     render() {
         $(`#room-member-timer-${this.memberId}`).html(moment().set({ h: 0, m: 0, s: 0 }).seconds(this.seconds).format('H:mm:ss'));
     }
-};
+}
 
 class RoomMemberBreakTimer {
     constructor(memberId, seconds, playStatus) {
@@ -154,8 +153,7 @@ class RoomMemberBreakTimer {
     render() {
         $(`#room-member-break-timer-${this.memberId}`).html(moment().set({ h: 0, m: 0, s: 0 }).seconds(this.seconds).format('H:mm:ss'));
     }
-};
-
+}
 
 let ProgrammeTimer = (function () {
     let seconds,
@@ -173,19 +171,18 @@ let ProgrammeTimer = (function () {
             play();
             updateCallback(PlayStatus.Playing);
         });
+
         $("#pause-button").click(function () {
             pause();
             updateCallback(PlayStatus.Paused);
         });
-        $("#update-time-button").click(function () {
-            let hours = $("#time-hours")[0].valueAsNumber || 0
-            let mins = $("#time-mins")[0].valueAsNumber || 0
-            let secs = $("#time-secs")[0].valueAsNumber || 0
 
-            seconds = (hours * 60 * 60) + (mins * 60) + secs;
-            render();
-            pause();
-            updateCallback(PlayStatus.Paused);
+        $("#update-time-button").click(function () {
+            let hours = $("#time-hours")[0].valueAsNumber || 0,
+            mins = $("#time-mins")[0].valueAsNumber || 0,
+            secs = $("#time-secs")[0].valueAsNumber || 0;
+
+            updateSeconds((hours * 60 * 60) + (mins * 60) + secs);
         });
 
         if (playStatus === PlayStatus.Playing && !inBreak) {
@@ -223,19 +220,24 @@ let ProgrammeTimer = (function () {
     }
 
     function render() {
+        ProgressBar.render(seconds);
         $("#programme-time").html(moment().set({ h: 0, m: 0, s: 0 }).seconds(seconds).format('H:mm:ss'));
     }
 
-    function getSeconds() {
-        return seconds;
+    function updateSeconds(updateSeconds) {
+        seconds = Math.round(updateSeconds);
+        pause();
+        update();
+        updateCallback(PlayStatus.Paused);
     }
 
     return {
         init: init,
         seconds: () => { return seconds; },
         pause: pause,
-        play: play
-    }
+        play: play,
+        updateSeconds : updateSeconds
+    };
 })();
 
 let BreakTimer = (function () {
@@ -312,7 +314,7 @@ let BreakTimer = (function () {
     }
 
     function update() {
-        if (seconds != null && seconds <= 0) {
+        if (seconds !== null && seconds <= 0) {
             seconds = null;
             inBreak = false;
             pause();
@@ -333,7 +335,7 @@ let BreakTimer = (function () {
             $("#break-time").html(moment().set({ h: 0, m: 0, s: 0 }).seconds(seconds).format('H:mm:ss'));
         }
         else {
-            $("#break-time").html("Disabled")
+            $("#break-time").html("Disabled");
         }
     }
 
@@ -348,7 +350,7 @@ let BreakTimer = (function () {
         seconds: () => { return seconds; },
         inBreak: () => { return inBreak; },
         reset: reset
-    }
+    };
 })();
 
 const PlayStatus = {
@@ -356,7 +358,7 @@ const PlayStatus = {
     Playing: 1,
     Paused: 2,
     Finished: 3
-}
+};
 
 function PlayStatusText(playStatus, inBreak) {
     let breakText = inBreak ? " Adverts" : "";
@@ -369,7 +371,7 @@ function PlayStatusText(playStatus, inBreak) {
         case PlayStatus.Paused:
             return "Paused" + breakText;
         case PlayStatus.Finished:
-            return "Finished Watching"
+            return "Finished Watching";
         default:
             return "";
     }
@@ -387,26 +389,77 @@ function CurrentProgrammeTime(lastRecordedTimeSecs, lastUpdatedTime, playStatus)
     return calculatedTime;
 }
 
-let RuntimeBar = (function () {
-    let runtimeSeconds,
-        progressBar;
+let ProgressBar = (function () {
+    let progressBarClickZone,
+        progressBar,
+        progressBarFill,
+        overlay,
+        totalRuntimeSecs,
+        updateRuntimeSecs,
+        editMode;
 
-    function init(initRuntimeSeconds) {
-        runtimeSeconds = initRuntimeSeconds;
-        progressBar = $("#progess-bar");
+    function init(initTotalRuntimeSecs) {
+        progressBarClickZone = $("#progress-bar-click-zone");
+        progressBar = $("#progress-bar");
+        progressBarFill = $("#progress-bar-fill");
+        overlay = $("#overlay");
+        totalRuntimeSecs = initTotalRuntimeSecs;
+
+        let mouseDown = false;
+
+        progressBarClickZone.on('mousedown', function () {
+            mouseDown = true;
+        });
+
+        progressBarClickZone.on('mouseup mousemove mouseleave',function () {
+            if (progressBar.hasClass("selected")) {
+                if (mouseDown) {
+                    let updateRunningTimeMultiplier = (event.pageY - $(this).offset().top) / $(this).height();
+                    updateRuntimeSecs = totalRuntimeSecs * updateRunningTimeMultiplier;
+                    setFillBarHeight(updateRuntimeSecs);
+                    editMode = true;
+                }
+            }
+
+            progressBarClickZone.addClass("selected");
+            progressBar.addClass("selected");
+            overlay.show();
+        });
+
+        overlay.click(function () {
+            progressBarClickZone.removeClass("selected");
+            progressBar.removeClass("selected");
+
+            if (updateRuntimeSecs) {
+                ProgrammeTimer.updateSeconds(updateRuntimeSecs); 
+            }
+
+            updateRuntimeSecs = null;
+            editMode = false;
+            overlay.hide();
+        });
     }
 
-    function play() {
-        
+    function setFillBarHeight(programmeTimeSecs) {
+        progressBarFill.height(`${programmeTimeSecs / totalRuntimeSecs * 100}%`);
+    }
+
+    function render(programmeTimeSecs)
+    {
+        if (!editMode) {
+            setFillBarHeight(programmeTimeSecs);
+        }
     }
 
     return {
         init: init,
-        play: play
-    }
+        render : render
+    };
 })();
 
 window.onload = function () {
+    ProgressBar.init(roomData.TotalRuntimeSeconds);
+
     ProgrammeTimer.init(CurrentProgrammeTime(roomData.ProgrammeTimeSecs, roomData.LastUpdatedTime, roomData.PlayStatus), roomData.TotalRuntimeSeconds, roomData.PlayStatus, roomData.InBreak, updateServerProgrammeTime);
 
     let breakTimeSeconds = roomData.InBreak ? CurrentProgrammeTime(-roomData.BreakTimeSecs, roomData.LastUpdatedTime, roomData.PlayStatus) : null;

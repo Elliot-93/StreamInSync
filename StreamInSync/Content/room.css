@@ -46,19 +46,50 @@
     line-height: 30px;
 }
 
-#progress-bar-container {
+#progress-bar {
     display: inline-block;
     width: 10px;
     background-color: lightgray;
     height: calc(100vh - 179px);
     position: absolute;
     margin-left: -16px;
+    z-index: 4;
 }
 
-#progress-bar {
+    #progress-bar.selected {
+        width:40px;
+    }
+
+#progress-bar-click-zone {
+    width: 20px;
+    display: inline-block;
+    position: absolute;
+    height: calc(100vh - 179px);
+    margin-left: -16px;
+    z-index: 5;
+}
+
+    #progress-bar-click-zone.selected {
+        width: 50px;
+    }
+
+#progress-bar-fill {
     background-color: #E00000;
 }
 
 #room-container {
     display: inline-block;
+}
+
+#overlay {
+    position: fixed;
+    display: none; 
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 2;
 }

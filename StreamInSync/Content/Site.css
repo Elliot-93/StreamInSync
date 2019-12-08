@@ -25,4 +25,5 @@ footer {
 .navbar {
     width: 100%;
     background-color: lightgrey;
+    z-index: 1;
 }

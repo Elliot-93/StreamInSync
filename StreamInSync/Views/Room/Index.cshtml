@@ -2,10 +2,11 @@
 @model StreamInSync.Models.RoomVM
 @section Title {Create Room}
 <h1>@Model.Room.Name</h1>
-<div id="progress-bar-container">
-    <div id="progress-bar">
+<div id="progress-bar">
+    <div id="progress-bar-fill">
     </div>
 </div>
+<div id="progress-bar-click-zone"></div>
 <div id="room-container">
     <div id="room-info-container">
         <div>Owner: @Model.Room.Owner.Username</div>
@@ -43,6 +44,7 @@
     <div class="userList">
     </div>
 </div>
+<div id="overlay"></div>
 @section Styles {@Styles.Render("~/Content/room")}
 @section Scripts {
     <script src="~/Scripts/Libraries/jquery.signalR-2.2.2.js"></script>
