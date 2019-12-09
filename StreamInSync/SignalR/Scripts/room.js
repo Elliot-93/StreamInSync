@@ -406,12 +406,31 @@ let ProgressBar = (function () {
         totalRuntimeSecs = initTotalRuntimeSecs;
 
         let mouseDown = false;
+        let updateProgressBarInterval;
 
         progressBarClickZone.on('mousedown', function () {
+            event.preventDefault();
+            console.log('mousedown');
             mouseDown = true;
+
+            progressBarClickZone.on('mousemove', function (e) {
+                event.preventDefault();
+                console.log(e.type);
+
+                if (progressBar.hasClass("selected")) {
+                    if (mouseDown) {
+                        let updateRunningTimeMultiplier = (event.pageY - $(this).offset().top) / $(this).height();
+                        updateRuntimeSecs = totalRuntimeSecs * updateRunningTimeMultiplier;
+                        setFillBarHeight(updateRuntimeSecs);
+                        editMode = true;
+                    }
+                }
+            });
         });
 
-        progressBarClickZone.on('mouseup mousemove mouseleave',function () {
+        progressBarClickZone.on('mouseup mouseleave', function (e) {
+            event.preventDefault();
+            console.log(e.type);
             if (progressBar.hasClass("selected")) {
                 if (mouseDown) {
                     let updateRunningTimeMultiplier = (event.pageY - $(this).offset().top) / $(this).height();
@@ -421,8 +440,11 @@ let ProgressBar = (function () {
                 }
             }
 
+            progressBarClickZone.off('mousemove');
             progressBarClickZone.addClass("selected");
             progressBar.addClass("selected");
+            clearInterval(updateProgressBarInterval);
+            mouseDown = false;
             overlay.show();
         });
 
