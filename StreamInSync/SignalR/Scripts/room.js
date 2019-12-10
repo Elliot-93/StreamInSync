@@ -107,7 +107,7 @@ class RoomMemberProgrammeTimer {
     }
 
     render() {
-        $(`#room-member-timer-${this.memberId}`).html(moment().set({ h: 0, m: 0, s: 0 }).seconds(this.seconds).format('H:mm:ss'));
+        $(`#room-member-timer-${this.memberId}`).html(FormatSecondsToTime(this.seconds));
     }
 }
 
@@ -151,7 +151,7 @@ class RoomMemberBreakTimer {
     }
 
     render() {
-        $(`#room-member-break-timer-${this.memberId}`).html(moment().set({ h: 0, m: 0, s: 0 }).seconds(this.seconds).format('H:mm:ss'));
+        $(`#room-member-break-timer-${this.memberId}`).html(FormatSecondsToTime(this.seconds));
     }
 }
 
@@ -221,7 +221,7 @@ let ProgrammeTimer = (function () {
 
     function render() {
         ProgressBar.render(seconds);
-        $("#programme-time").html(moment().set({ h: 0, m: 0, s: 0 }).seconds(seconds).format('H:mm:ss'));
+        $("#programme-time").html(FormatSecondsToTime(seconds));
     }
 
     function updateSeconds(updateSeconds) {
@@ -332,7 +332,7 @@ let BreakTimer = (function () {
             $("#break-time").html("Enabled, duration not set");
         }
         else if (inBreak){
-            $("#break-time").html(moment().set({ h: 0, m: 0, s: 0 }).seconds(seconds).format('H:mm:ss'));
+            $("#break-time").html(FormatSecondsToTime(seconds));
         }
         else {
             $("#break-time").html("Disabled");
@@ -389,68 +389,61 @@ function CurrentProgrammeTime(lastRecordedTimeSecs, lastUpdatedTime, playStatus)
     return calculatedTime;
 }
 
+function FormatSecondsToTime(seconds) {
+    var mo = moment().set({ h: 0, m: 0, s: 0 }).seconds(seconds);
+    return seconds < 3600 ? mo.format('mm:ss') : mo.format('H:mm:ss');
+}
+
 let ProgressBar = (function () {
     let progressBarClickZone,
         progressBar,
         progressBarFill,
         overlay,
+        timePreview,
         totalRuntimeSecs,
         updateRuntimeSecs,
         editMode;
 
     function init(initTotalRuntimeSecs) {
-        progressBarClickZone = $("#progress-bar-click-zone");
         progressBar = $("#progress-bar");
+        progressBarClickZone = $("#progress-bar-click-zone").add(progressBar);
         progressBarFill = $("#progress-bar-fill");
         overlay = $("#overlay");
+        timePreview = $('#time-preview');
         totalRuntimeSecs = initTotalRuntimeSecs;
 
         let mouseDown = false;
-        let updateProgressBarInterval;
 
-        progressBarClickZone.on('mousedown', function () {
-            event.preventDefault();
-            console.log('mousedown');
+        progressBarClickZone.on('mousedown touchstart', function () {
             mouseDown = true;
 
-            progressBarClickZone.on('mousemove', function (e) {
-                event.preventDefault();
-                console.log(e.type);
-
-                if (progressBar.hasClass("selected")) {
+            progressBarClickZone.on('mousemove touchmove', function (e) {
+                if (progressBarClickZone.hasClass("selected")) {
                     if (mouseDown) {
-                        let updateRunningTimeMultiplier = (event.pageY - $(this).offset().top) / $(this).height();
-                        updateRuntimeSecs = totalRuntimeSecs * updateRunningTimeMultiplier;
-                        setFillBarHeight(updateRuntimeSecs);
-                        editMode = true;
+                        updateProgrammeTime($(this), e);
                     }
                 }
             });
         });
 
-        progressBarClickZone.on('mouseup mouseleave', function (e) {
-            event.preventDefault();
-            console.log(e.type);
-            if (progressBar.hasClass("selected")) {
+        progressBarClickZone.on('mouseup mouseleave touchend touchcancel', function (e) {
+            if (progressBarClickZone.hasClass("selected")) {
                 if (mouseDown) {
-                    let updateRunningTimeMultiplier = (event.pageY - $(this).offset().top) / $(this).height();
-                    updateRuntimeSecs = totalRuntimeSecs * updateRunningTimeMultiplier;
-                    setFillBarHeight(updateRuntimeSecs);
-                    editMode = true;
+                    updateProgrammeTime($(this), e);
                 }
             }
 
-            progressBarClickZone.off('mousemove');
-            progressBarClickZone.addClass("selected");
-            progressBar.addClass("selected");
-            clearInterval(updateProgressBarInterval);
+            progressBarClickZone.off('mousemove touchmove');
             mouseDown = false;
-            overlay.show();
+
+            if (e.type === "mouseup" || e.type === "touchend") {
+                progressBarClickZone.addClass("selected");
+                overlay.show();
+            }
         });
 
         overlay.click(function () {
             progressBarClickZone.removeClass("selected");
-            progressBar.removeClass("selected");
 
             if (updateRuntimeSecs) {
                 ProgrammeTimer.updateSeconds(updateRuntimeSecs); 
@@ -458,8 +451,35 @@ let ProgressBar = (function () {
 
             updateRuntimeSecs = null;
             editMode = false;
+            timePreview.hide();
             overlay.hide();
         });
+    }
+
+    function updateProgrammeTime(element, event) {
+        let x,y;
+
+        if (['touchstart', 'touchmove', 'touchend', 'touchcancel'].includes(event.type)) {
+            var touch = event.originalEvent.touches[0] || event.originalEvent.changedTouches[0];
+            x = touch.pageX;
+            y = touch.pageY;
+        } else if (['mousedown', 'mouseup', 'mousemove', 'mouseleave'].includes(event.type)) {
+            x = event.clientX;
+            y = event.clientY;
+        }
+
+        let updateRunningTimeMultiplier = (y - element.offset().top) / element.height();
+        updateRuntimeSecs = totalRuntimeSecs * updateRunningTimeMultiplier;
+        setFillBarHeight(updateRuntimeSecs);
+
+        timePreview
+            .css({
+                'top': y - 20,
+                'left': element.offset().left + element.width()})
+            .text(FormatSecondsToTime(updateRuntimeSecs))
+            .fadeIn(100);
+
+        editMode = true;
     }
 
     function setFillBarHeight(programmeTimeSecs) {
